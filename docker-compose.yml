@@ -1,0 +1,33 @@
+services:
+    api:
+        container_name: api
+        restart: on-failure
+        build: .
+        ports:
+            - "8000:8000"
+        env_file:
+            - ".env.example"
+        volumes:
+            - "./src/crudik/adapters/db/alembic/migrations/versions/:/home/app/src/crudik/adapters/db/alembic/migrations/versions/"
+    redis:
+        image: redis:7.0
+        container_name: redis_service
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        command: [ "redis-server", "--appendonly", "yes" ]
+
+    db:
+      container_name: persistence
+      image: postgres:14.1-alpine
+      volumes:
+        - pg_data:/var/lib/postgresql/data/
+      env_file:
+        - .env.pg
+      ports:
+        - 5432:5432
+
+volumes:
+  pg_data:
+  redis_data:
