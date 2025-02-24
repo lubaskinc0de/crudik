@@ -1,7 +1,5 @@
 [build-system]
-requires = [
-    'setuptools==68.1.2',
-]
+requires = ['setuptools==68.1.2']
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -10,19 +8,17 @@ version = '0.0.1'
 readme = 'README.md'
 requires-python = '>=3.10'
 dependencies = [
-  "dishka==1.4.2",
-  "fastapi[standard]==0.115.6",
-  "asyncpg==0.30.0",
-  "sqlalchemy==2.0.37",
-  "alembic==1.14.0",
-  "redis==5.2.1",
+    "dishka==1.4.2",
+    "fastapi[standard]==0.115.6",
+    "asyncpg==0.30.0",
+    "sqlalchemy==2.0.37",
+    "alembic==1.14.0",
+    "redis==5.2.1",
+    "aiohttp==3.11.13",
 ]
 
 [project.optional-dependencies]
-lint = [
-    'ruff==0.9.3',
-    'mypy==1.14.1',
-]
+lint = ['ruff==0.9.3', 'mypy==1.14.1']
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -50,27 +46,27 @@ exclude = ["src/crudik/adapters/db/alembic/**/*.py"]
 select = ['ALL']
 
 ignore = [
-  # Strange and obscure
-  'D100',
-  'D104',
-  'D101',
-  'D105',
-  'D102',
-  'RET504',
-  'D103',
-  'PLR0913',
-  'S101',
-  'EM101',
-  'TRY003',
-  'D107',
-  'ARG002',
-  'RUF001',
-  'PLR0912',
-  'C901',
-  'PGH003',
-  # Does not work correctly
-  'S104',
-  'ANN401',
+    # Strange and obscure
+    'D100',
+    'D104',
+    'D101',
+    'D105',
+    'D102',
+    'RET504',
+    'D103',
+    'PLR0913',
+    'S101',
+    'EM101',
+    'TRY003',
+    'D107',
+    'ARG002',
+    'RUF001',
+    'PLR0912',
+    'C901',
+    'PGH003',
+    # Does not work correctly
+    'S104',
+    'ANN401',
 ]
 
 [[project.authors]]
