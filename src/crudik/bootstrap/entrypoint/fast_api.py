@@ -62,6 +62,7 @@ def run_api(_argv: list[str]) -> None:
         port=int(os.environ["SERVER_PORT"]),
         host=bind,
         log_config=log_config,
+        access_log=bool(int(os.environ["SERVER_ACCESS_LOG"])),
     )
 
 

@@ -11,5 +11,3 @@ COPY ./pyproject.toml $APP_HOME
 RUN uv pip install -e . --system
 
 COPY ./src/ $APP_HOME/src/
-
-ENTRYPOINT ["crudik", "run", "api"]
