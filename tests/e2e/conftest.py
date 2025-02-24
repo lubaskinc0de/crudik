@@ -63,5 +63,5 @@ async def http_session() -> AsyncIterator[ClientSession]:
 
 
 @pytest.fixture(scope="session")
-def url() -> str:
+def api_url() -> str:
     return os.environ["API_URL"]
