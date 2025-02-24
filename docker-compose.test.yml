@@ -6,6 +6,17 @@ services:
         depends_on:
             - api
 
+    tests:
+        restart: no
+        extends:
+            file: docker-compose.base.yml
+            service: code
+        container_name: tests
+        command: [ "pytest", "-vvv" ]
+        depends_on:
+            nginx:
+                condition: service_healthy
+
     api:
         extends:
             file: docker-compose.base.yml

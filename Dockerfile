@@ -8,6 +8,7 @@ RUN addgroup --system app && adduser --system --group app
 
 RUN pip install uv
 COPY ./pyproject.toml $APP_HOME
-RUN uv pip install -e . --system
+RUN uv pip install -e ".[test]" --system
 
 COPY ./src/ $APP_HOME/src/
+COPY ./tests/ $APP_HOME/tests/
