@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from sqlalchemy.exc import DBAPIError
 
 from crudik.application.exceptions.base import ApplicationError
-from crudik.presentation.http.endpoint.root import router as root_router
-from crudik.presentation.http.exception_handlers import (
+from crudik.presentation.fast_api.endpoint.root import router as root_router
+from crudik.presentation.fast_api.exception_handlers import (
     app_exception_handler,
     dbapi_error_handler,
 )

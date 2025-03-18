@@ -2,7 +2,7 @@ up:
     sudo docker compose up --build
 
 e2e:
-    sudo docker compose -f docker-compose.test.yml up --build
+    sudo docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
 
 down:
     sudo docker compose down

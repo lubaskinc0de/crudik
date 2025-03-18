@@ -2,7 +2,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 
-from crudik.application.example import ExampleCommand
+from crudik.application.ping import Ping
 
 router = APIRouter(
     tags=["Root"],
@@ -11,5 +11,5 @@ router = APIRouter(
 
 
 @router.get("/ping/")
-async def ping(command: FromDishka[ExampleCommand]) -> str:
+async def ping(command: FromDishka[Ping]) -> str:
     return await command.execute()

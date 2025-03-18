@@ -15,11 +15,12 @@ dependencies = [
     "alembic==1.14.0",
     "redis==5.2.1",
     "aiohttp==3.11.13",
+    "adaptix==3.0.0b9"
 ]
 
 [project.optional-dependencies]
 lint = ['ruff==0.9.10', 'mypy==1.15.0']
-test = ['pytest==8.3.5', 'pytest-asyncio==0.25.3', 'coverage==7.6.12']
+test = ['pytest==8.3.5', 'pytest-asyncio==0.25.3', 'coverage==7.6.12', 'aiohttp==3.11.13']
 dev = ['crudik[test,lint]']
 ci = ['crudik[dev]']
 

@@ -13,6 +13,8 @@ services:
             service: code
         container_name: tests
         command: [ "pytest", "-vvv" ]
+        environment:
+            - API_URL=http://nginx:8000
         depends_on:
             nginx:
                 condition: service_healthy

@@ -9,7 +9,7 @@ from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
 from crudik.bootstrap.di.container import get_async_container
-from crudik.presentation.http import include_exception_handlers, include_routers
+from crudik.presentation.fast_api import include_exception_handlers, include_routers
 
 log_config = {
     "version": 1,

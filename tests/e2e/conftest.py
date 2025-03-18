@@ -10,6 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.bootstrap.di.container import get_async_container
+from tests.e2e.api_client import TestAPIClient
 
 
 @pytest.fixture
@@ -57,11 +58,16 @@ async def gracefully_teardown(
 
 
 @pytest.fixture
-async def http_session() -> AsyncIterator[ClientSession]:
-    async with aiohttp.ClientSession() as session:
+async def http_session(base_url: str) -> AsyncIterator[ClientSession]:
+    async with aiohttp.ClientSession(base_url=base_url) as session:
         yield session
 
 
 @pytest.fixture(scope="session")
-def api_url() -> str:
+def base_url() -> str:
     return os.environ["API_URL"]
+
+
+@pytest.fixture
+def client(http_session: ClientSession) -> TestAPIClient:
+    return TestAPIClient(session=http_session)
