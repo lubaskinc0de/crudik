@@ -5,7 +5,6 @@ build-backend = "uv_build"
 [project]
 name = 'crudik'
 version = '0.0.1'
-readme = 'README.md'
 requires-python = '>=3.13'
 dependencies = [
     "dishka==1.7.2",
@@ -58,6 +57,7 @@ ignore = [
     'D101',
     'D105',
     'D102',
+    'D401',
     'RET504',
     'D103',
     'PLR0913',

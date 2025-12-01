@@ -16,22 +16,23 @@ services:
         depends_on:
             - api
 
+    migrations:
+        extends:
+            file: docker-compose.base.yml
+            service: migrations
+        depends_on:
+            db:
+                condition: service_healthy
+
     api:
         extends:
             file: docker-compose.base.yml
             service: api
         depends_on:
-            redis:
-                condition: service_healthy
             db:
                 condition: service_healthy
-
-    redis:
-        extends:
-            file: docker-compose.base.yml
-            service: redis
-        volumes:
-            - redis_data:/data
+            migrations:
+                condition: service_completed_successfully
 
     db:
         extends:
@@ -42,5 +43,4 @@ services:
 
 volumes:
     pg_data:
-    redis_data:
     grafana_data:

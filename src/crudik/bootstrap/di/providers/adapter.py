@@ -1,27 +1,38 @@
-from dishka import Provider, Scope, provide
-from redis.asyncio import Redis
+from collections.abc import AsyncIterator
 
-from crudik.adapters.config_loader import DBConnectionConfig
-from crudik.adapters.db.provider import get_async_session, get_async_sessionmaker, get_engine
-from crudik.adapters.redis import RedisStorage
+from dishka import AnyOf, Provider, Scope, provide
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+
+from crudik.adapters.db.config import DbConfig
+from crudik.application.common.uow import UoW
 
 
 class AdapterProvider(Provider):
-    redis_storage = provide(RedisStorage, scope=Scope.APP)
+    @provide(scope=Scope.APP)
+    async def get_engine(self, config: DbConfig) -> AsyncIterator[AsyncEngine]:
+        engine = create_async_engine(
+            config.connection_url,
+            future=True,
+        )
+        yield engine
+        await engine.dispose()
 
     @provide(scope=Scope.APP)
-    async def redis_client(self, config: DBConnectionConfig) -> Redis:
-        return Redis(
-            host=config.redis_host,
-            port=config.redis_port,
-            db=0,
+    async def get_async_sessionmaker(
+        self,
+        engine: AsyncEngine,
+    ) -> async_sessionmaker[AsyncSession]:
+        session_factory = async_sessionmaker(
+            engine,
+            expire_on_commit=False,
+            class_=AsyncSession,
         )
+        return session_factory
 
-
-def adapter_provider() -> AdapterProvider:
-    provider = AdapterProvider()
-    provider.provide(get_engine, scope=Scope.APP)
-    provider.provide(get_async_sessionmaker, scope=Scope.APP)
-    provider.provide(get_async_session, scope=Scope.REQUEST)
-
-    return provider
+    @provide(scope=Scope.REQUEST)
+    async def get_async_session(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+    ) -> AsyncIterator[AnyOf[AsyncSession, UoW]]:
+        async with session_factory() as session:
+            yield session

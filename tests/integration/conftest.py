@@ -9,13 +9,14 @@ from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from crudik.adapters.config_loader import Config
 from crudik.bootstrap.di.container import get_async_container
-from tests.e2e.api_client import TestAPIClient
+from tests.integration.api_client import TestAPIClient
 
 
 @pytest.fixture
 async def container() -> AsyncIterator[AsyncContainer]:
-    container = get_async_container()
+    container = get_async_container(Config.from_env())
     yield container
     await container.close()
 

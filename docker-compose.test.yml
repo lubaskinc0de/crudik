@@ -8,15 +8,24 @@ services:
 
     tests:
         restart: no
-        extends:
-            file: docker-compose.base.yml
-            service: code
+        build:
+            context: .
+            dockerfile: Dockerfile.test
+        env_file:
+            - ".env"
         container_name: tests
-        command: [ "pytest", "-vvv" ]
         environment:
             - API_URL=http://nginx:8000
         depends_on:
             nginx:
+                condition: service_healthy
+
+    migrations:
+        extends:
+            file: docker-compose.base.yml
+            service: migrations
+        depends_on:
+            db:
                 condition: service_healthy
 
     api:
@@ -24,15 +33,10 @@ services:
             file: docker-compose.base.yml
             service: api
         depends_on:
-            redis:
-                condition: service_healthy
             db:
                 condition: service_healthy
-
-    redis:
-        extends:
-            file: docker-compose.base.yml
-            service: redis
+            migrations:
+                condition: service_completed_successfully
 
     db:
         extends:

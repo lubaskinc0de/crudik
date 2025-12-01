@@ -1,44 +1,42 @@
-import logging
 import os
 from dataclasses import dataclass
+from typing import Self
+
+from adaptix import Retort
+from adaptix.load_error import LoadError
+
+from crudik.adapters.db.config import DbConfig
+
+ENV_PREFIX = "APP"
+
+env_retort = Retort(strict_coercion=False)
 
 
-@dataclass(frozen=True, slots=True)
-class DBConnectionConfig:
-    postgres_username: str
-    postgres_password: str
-    postgres_host: str
-    postgres_port: int
-    postgres_database: str
-    redis_host: str
-    redis_port: int
-
-    @property
-    def postgres_conn_url(self) -> str:
-        user = self.postgres_username
-        password = self.postgres_password
-        host = self.postgres_host
-        db_name = self.postgres_database
-
-        return f"postgresql+asyncpg://{user}:{password}@{host}/{db_name}"
+def env[T = str](name: str, tp: type[T] | None = None, env_prefix: str = ENV_PREFIX) -> T:
+    variable_name = f"{env_prefix}_{name}"
+    try:
+        return env_retort.load(os.environ[variable_name], tp if tp is not None else str)  # type: ignore
+    except KeyError as e:
+        msg = f"Environment variable '{variable_name}' is not set."
+        raise RuntimeError(msg) from e
+    except LoadError as e:
+        msg = f"Cannot load environment variable '{variable_name}'."
+        raise RuntimeError(msg) from e
 
 
 @dataclass(frozen=True, slots=True)
 class Config:
-    db_connection: DBConnectionConfig
+    db: DbConfig
 
     @classmethod
-    def load_from_environment(cls: type["Config"]) -> "Config":
-        db = DBConnectionConfig(
-            postgres_username=os.environ["POSTGRES_USERNAME"],
-            postgres_password=os.environ["POSTGRES_PASSWORD"],
-            postgres_host=os.environ["POSTGRES_HOST"],
-            postgres_port=int(os.environ["POSTGRES_PORT"]),
-            postgres_database=os.environ["POSTGRES_DATABASE"],
-            redis_host=os.environ["REDIS_HOST"],
-            redis_port=int(os.environ["REDIS_PORT"]),
+    def from_env(cls: type[Self]) -> Self:
+        db = DbConfig(
+            user=env("DB_USER"),
+            password=env("DB_PASSWORD"),
+            host=env("DB_HOST"),
+            port=env("DB_PORT", int),
+            db_name=env("DB_NAME"),
         )
-        logging.debug("Config loaded.")
         return cls(
-            db_connection=db,
+            db=db,
         )

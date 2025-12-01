@@ -1,15 +1,9 @@
-from dishka import Provider, Scope, provide
+from dishka import Provider, Scope, from_context
 
-from crudik.adapters.config_loader import Config, DBConnectionConfig
+from crudik.adapters.config_loader import Config
+from crudik.adapters.db.config import DbConfig
 
 
 class ConfigProvider(Provider):
     scope = Scope.APP
-
-    @provide
-    def config(self) -> Config:
-        return Config.load_from_environment()
-
-    @provide
-    def db_connection(self, config: Config) -> DBConnectionConfig:
-        return config.db_connection
+    configs = from_context(Config) + from_context(DbConfig)

@@ -7,19 +7,19 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from crudik.adapters.config_loader import Config
-from crudik.models import Base
+from crudik.adapters.db.models.base import mapper_registry
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Base.metadata
+target_metadata = mapper_registry.metadata
 
 
 def get_url() -> str:
-    settings = Config.load_from_environment()
-    url = settings.db_connection.postgres_conn_url
+    settings = Config.from_env()
+    url = settings.db.connection_url
     return url
 
 

@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -8,6 +7,7 @@ import uvicorn
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
+from crudik.adapters.config_loader import Config
 from crudik.bootstrap.di.container import get_async_container
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
 
@@ -45,7 +45,7 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
-container = get_async_container()
+container = get_async_container(Config.from_env())
 
 setup_dishka(container=container, app=app)
 
@@ -55,16 +55,15 @@ include_routers(app)
 include_exception_handlers(app)
 
 
-def run_api(_argv: list[str]) -> None:
+def run_api() -> None:
     bind = "0.0.0.0"
     uvicorn.run(
         app,
-        port=int(os.environ["SERVER_PORT"]),
+        port=5000,
         host=bind,
         log_config=log_config,
-        access_log=bool(int(os.environ["SERVER_ACCESS_LOG"])),
     )
 
 
 if __name__ == "__main__":
-    run_api(sys.argv)
+    run_api()

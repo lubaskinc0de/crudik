@@ -27,10 +27,15 @@ COPY ./pyproject.toml ./uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project
+    uv sync --locked --no-install-project --extra test
 
 # copying application source code
 COPY ./src $APP_HOME/src
+# copying tests source code
+COPY ./tests $APP_HOME/tests
 
 # installing application itself without dependencies
 RUN uv pip install --no-deps .
+
+# pytest entrypoint
+ENTRYPOINT ["pytest", "-v"]

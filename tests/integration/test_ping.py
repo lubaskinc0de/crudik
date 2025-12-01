@@ -1,5 +1,5 @@
-from tests.e2e.api_client import TestAPIClient
-from tests.e2e.status import OK
+from tests.integration.api_client import TestAPIClient
+from tests.integration.status import OK
 
 
 async def test_ok(client: TestAPIClient) -> None:

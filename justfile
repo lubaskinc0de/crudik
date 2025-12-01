@@ -1,17 +1,36 @@
 up:
-    sudo docker compose up --build
+    docker compose up --build
 
-e2e:
-    sudo docker compose -f docker-compose.test.yml up --build --abort-on-container-exit
+up-silent:
+    docker compose up --build -d
+
+up-db:
+    docker compose up db -d
+
+test:
+    docker compose -f docker-compose.test.yml up --build --abort-on-container-exit tests
+
+test-unit:
+    pytest -vvv tests/unit
 
 down:
-    sudo docker compose down
-    sudo docker compose -f docker-compose.test.yml down
+    docker compose down
+    docker compose -f docker-compose.test.yml down
 
 clear:
-    sudo docker compose down -v
+    docker compose down -v
 
 lint:
     ruff format
     ruff check --fix
     mypy
+
+dev-environment:
+    uv pip install -e ".[dev]"
+
+
+generate-migration NAME:
+    just up-db
+    sleep 1s
+    set -a && source ./.env.migrations.local && set +a && crudik migrations autogenerate "{{NAME}}"
+    just down
