@@ -1,5 +1,5 @@
 from .base import Entity, model
-from .config import config
+from .common.config import config
 
 __all__ = [
     "Entity",

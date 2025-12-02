@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from crudik.application.common.event.user import UserCreated
 from crudik.application.common.interactor import interactor
 from crudik.application.common.uow import UoW
-from crudik.entities.identifiers import UserId
+from crudik.entities.common.identifiers import UserId
 from crudik.entities.user import User
 
 
