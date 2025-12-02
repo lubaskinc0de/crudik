@@ -1,8 +1,8 @@
-from crudik.domain.base import entity
+from crudik.domain.base import model
 from crudik.domain.identifiers import UserId
 
 
-@entity
+@model
 class User:
     """A class that represents the entity of the user of the application.
 

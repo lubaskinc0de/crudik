@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 from adaptix import Retort
 from aiohttp import ClientResponse, ClientSession
@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 
 @dataclass(slots=True, frozen=True)
-class APIResponse(Generic[T]):
+class APIResponse[T]:
     content: T
     http_response: ClientResponse
 

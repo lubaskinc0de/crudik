@@ -1,9 +1,10 @@
-from dishka import Provider, Scope, from_context
+from dishka import BaseScope, Provider, Scope, from_context
 
-from crudik.adapters.config_loader import Config
+from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
+from crudik.adapters.config.loader import Config
 from crudik.adapters.db.config import DbConfig
 
 
 class ConfigProvider(Provider):
-    scope = Scope.APP
-    configs = from_context(Config) + from_context(DbConfig)
+    scope: BaseScope | None = Scope.APP
+    configs = from_context(Config) + from_context(DbConfig) + from_context(WebAuthUserIdProviderConfig)

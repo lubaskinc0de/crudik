@@ -1,5 +1,3 @@
-import logging
-import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -7,7 +5,7 @@ import uvicorn
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from crudik.adapters.config_loader import Config
+from crudik.adapters.config.loader import Config
 from crudik.bootstrap.di.container import get_async_container
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
 
@@ -38,27 +36,28 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await app.state.dishka_container.close()
 
 
-app = FastAPI(
-    lifespan=lifespan,
-    root_path="/api",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json",
-)
-container = get_async_container(Config.from_env())
+def create_app() -> FastAPI:
+    app = FastAPI(
+        lifespan=lifespan,
+        root_path="/api",
+        docs_url="/docs",
+        redoc_url="/redoc",
+        openapi_url="/openapi.json",
+    )
+    container = get_async_container(Config.load())
 
-setup_dishka(container=container, app=app)
+    setup_dishka(container=container, app=app)
 
-logging.info("Fastapi app created.")
+    include_routers(app)
+    include_exception_handlers(app)
 
-include_routers(app)
-include_exception_handlers(app)
+    return app
 
 
 def run_api() -> None:
     bind = "0.0.0.0"
     uvicorn.run(
-        app,
+        create_app(),
         port=5000,
         host=bind,
         log_config=log_config,

@@ -6,7 +6,8 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from crudik.adapters.config_loader import Config
+from crudik.adapters.config.loader import Config
+from crudik.adapters.db.config import DbConfig
 from crudik.adapters.db.models.base import mapper_registry
 
 config = context.config
@@ -18,8 +19,8 @@ target_metadata = mapper_registry.metadata
 
 
 def get_url() -> str:
-    settings = Config.from_env()
-    url = settings.db.connection_url
+    config = DbConfig.from_env()
+    url = config.connection_url
     return url
 
 
@@ -59,10 +60,10 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
     """  # noqa: D205
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = get_url()  # type: ignore  # noqa: PGH003
+    configuration["sqlalchemy.url"] = get_url()  # type: ignore[index]  # noqa: PGH003
 
     connectable = async_engine_from_config(
-        configuration,  # type: ignore  # noqa: PGH003
+        configuration,  # type: ignore[arg-type]  # noqa: PGH003
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

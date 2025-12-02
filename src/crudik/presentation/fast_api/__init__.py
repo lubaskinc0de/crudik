@@ -1,25 +1,19 @@
-import logging
-
 from fastapi import FastAPI
-from sqlalchemy.exc import DBAPIError
 
-from crudik.application.exceptions.base import ApplicationError
-from crudik.presentation.fast_api.endpoint.root import router as root_router
-from crudik.presentation.fast_api.exception_handlers import (
-    app_exception_handler,
-    dbapi_error_handler,
+from crudik.presentation.fast_api.error_handlers import (
+    app_error_handler,
 )
+from crudik.presentation.fast_api.routers.root import router as root_router
+from crudik.presentation.fast_api.routers.user import router as users_router
 
 
 def include_routers(app: FastAPI) -> None:
     app.include_router(root_router)
-    logging.debug("Routers was included.")
+    app.include_router(users_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
-    app.add_exception_handler(ApplicationError, app_exception_handler)  # type: ignore
-    app.add_exception_handler(DBAPIError, dbapi_error_handler)  # type: ignore
-    logging.debug("Exception handlers was included.")
+    app.add_exception_handler(Exception, app_error_handler)
 
 
 __all__ = [

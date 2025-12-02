@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, ClassVar, dataclass_transform
+from typing import Any, ClassVar, dataclass_transform, override
 
 
 @dataclass_transform(kw_only_default=True)
@@ -60,3 +60,7 @@ class AppError(Exception):
 
         """
         return None
+
+    @override
+    def __str__(self) -> str:
+        return f"{self.code}: {self.message}{'\n':<6}meta={self.meta}"

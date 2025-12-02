@@ -1,24 +1,25 @@
 up:
-    docker compose up --build
+    docker compose -f docker/docker-compose.yml up --build
 
 up-silent:
-    docker compose up --build -d
+    docker compose -f docker/docker-compose.yml up --build -d
 
 up-db:
-    docker compose up db -d
+    docker compose -f docker/docker-compose.yml up db -d
 
 test:
-    docker compose -f docker-compose.test.yml up --build --abort-on-container-exit tests
+    docker compose -f docker/docker-compose.test.yml up --build --abort-on-container-exit tests
+    just down
 
 test-unit:
     pytest -vvv tests/unit
 
 down:
-    docker compose down
-    docker compose -f docker-compose.test.yml down
+    docker compose -f docker/docker-compose.yml down
+    docker compose -f docker/docker-compose.test.yml down
 
 clear:
-    docker compose down -v
+    docker compose -f docker/docker-compose.yml down -v
 
 lint:
     ruff format
@@ -32,5 +33,5 @@ dev-environment:
 generate-migration NAME:
     just up-db
     sleep 1s
-    set -a && source ./.env.migrations.local && set +a && crudik migrations autogenerate "{{NAME}}"
+    set -a && source ./.config/.env.migrations.local && set +a && crudik migrations autogenerate "{{NAME}}"
     just down

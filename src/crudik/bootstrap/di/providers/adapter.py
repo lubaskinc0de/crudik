@@ -1,13 +1,28 @@
 from collections.abc import AsyncIterator
 
-from dishka import AnyOf, Provider, Scope, provide
+from bazario.asyncio import Dispatcher, Registry, Resolver
+from bazario.asyncio.resolvers.dishka import DishkaResolver
+from dishka import AnyOf, AsyncContainer, Provider, Scope, WithParents, provide, provide_all
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
+from crudik.adapters.auth.handlers import UserCreatedHandler
+from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProvider
 from crudik.adapters.db.config import DbConfig
+from crudik.application.common.event.user import UserCreated
 from crudik.application.common.uow import UoW
 
 
 class AdapterProvider(Provider):
+    bazario_dispatcher = provide(WithParents[Dispatcher], scope=Scope.REQUEST)
+    event_handlers = provide_all(
+        UserCreatedHandler,
+        scope=Scope.REQUEST,
+    )
+    id_providers = provide_all(
+        WithParents[WebAuthUserIdProvider],
+        scope=Scope.REQUEST,
+    )
+
     @provide(scope=Scope.APP)
     async def get_engine(self, config: DbConfig) -> AsyncIterator[AsyncEngine]:
         engine = create_async_engine(
@@ -36,3 +51,13 @@ class AdapterProvider(Provider):
     ) -> AsyncIterator[AnyOf[AsyncSession, UoW]]:
         async with session_factory() as session:
             yield session
+
+    @provide(scope=Scope.REQUEST)
+    async def get_bazario_resolver(self, request_container: AsyncContainer) -> Resolver:
+        return DishkaResolver(request_container)
+
+    @provide(scope=Scope.APP)
+    async def get_bazario_registry(self) -> Registry:
+        registry = Registry()
+        registry.add_notification_handlers(UserCreated, UserCreatedHandler)
+        return registry

@@ -1,11 +1,13 @@
-from dishka import Provider, Scope, provide_all
+from dishka import BaseScope, Provider, Scope, provide_all
 
 from crudik.application.ping import Ping
+from crudik.application.user.create import CreateUser
 
 
-class Interactor(Provider):
-    scope = Scope.REQUEST
+class InteractorProvider(Provider):
+    scope: BaseScope | None = Scope.REQUEST
 
-    commands = provide_all(
+    interactors = provide_all(
+        CreateUser,
         Ping,
     )

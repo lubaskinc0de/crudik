@@ -1,8 +1,8 @@
-from .base import Entity, entity
+from .base import Entity, model
 from .config import config
 
 __all__ = [
     "Entity",
     "config",
-    "entity",
+    "model",
 ]
