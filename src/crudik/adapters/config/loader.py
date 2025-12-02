@@ -7,7 +7,7 @@ from adaptix import Retort
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.config.base import env
 from crudik.adapters.db.config import DbConfig
-from crudik.domain import config
+from crudik.entities import config
 
 retort = Retort()
 

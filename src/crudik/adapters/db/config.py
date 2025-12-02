@@ -1,7 +1,7 @@
 from typing import Self
 
 from crudik.adapters.config.base import env
-from crudik.domain import config
+from crudik.entities import config
 
 
 @config

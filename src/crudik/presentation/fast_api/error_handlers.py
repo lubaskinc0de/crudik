@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from crudik.adapters.auth.idp.base import UnauthorizedError
-from crudik.domain.errors.base import AppError, app_error
+from crudik.entities.errors.base import AppError, app_error
 
 
 @app_error

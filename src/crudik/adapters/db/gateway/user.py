@@ -2,8 +2,8 @@ from typing import override
 
 from crudik.adapters.db.gateway.base import SAGateway
 from crudik.application.common.gateway.user import UserGateway
-from crudik.domain.identifiers import UserId
-from crudik.domain.user import User
+from crudik.entities.identifiers import UserId
+from crudik.entities.user import User
 
 
 class SAUserGateway(UserGateway, SAGateway):

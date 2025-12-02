@@ -1,7 +1,7 @@
 from sqlalchemy import UUID, Column, Table
 
 from crudik.adapters.db.models.base import mapper_registry
-from crudik.domain.user import User
+from crudik.entities.user import User
 
 user_table = Table(
     "users",

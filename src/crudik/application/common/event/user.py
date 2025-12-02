@@ -1,6 +1,6 @@
 from bazario import Notification
 
-from crudik.domain.identifiers import UserId
+from crudik.entities.identifiers import UserId
 
 
 class UserCreated(Notification):

@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from crudik.domain.identifiers import UserId
-from crudik.domain.user import User
+from crudik.entities.identifiers import UserId
+from crudik.entities.user import User
 
 
 class UserGateway(Protocol):

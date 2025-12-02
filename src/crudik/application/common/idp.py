@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from crudik.domain.user import User
+from crudik.entities.user import User
 
 
 class UserIdProvider(Protocol):

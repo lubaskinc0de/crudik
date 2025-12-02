@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any, ClassVar, Protocol, override
 
 from crudik.adapters.auth.model import AuthUserId
-from crudik.domain.errors.base import AppError, app_error
+from crudik.entities.errors.base import AppError, app_error
 
 
 class AuthUserIdProvider(Protocol):

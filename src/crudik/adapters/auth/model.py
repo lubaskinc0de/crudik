@@ -1,5 +1,5 @@
-from crudik.domain.base import model
-from crudik.domain.identifiers import UserId
+from crudik.entities.base import model
+from crudik.entities.identifiers import UserId
 
 type AuthUserId = str
 
