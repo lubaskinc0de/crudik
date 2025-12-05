@@ -4,9 +4,9 @@ from dishka.integrations.fastapi import FastapiProvider
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.config.loader import Config
 from crudik.adapters.db.config import DbConfig
-from crudik.bootstrap.di.providers.adapter import AdapterProvider
-from crudik.bootstrap.di.providers.config import ConfigProvider
-from crudik.bootstrap.di.providers.interactor import InteractorProvider
+from crudik.adapters.di.providers.adapter import AdapterProvider
+from crudik.adapters.di.providers.config import ConfigProvider
+from crudik.adapters.di.providers.interactor import InteractorProvider
 
 
 def get_async_container(config: Config) -> AsyncContainer:

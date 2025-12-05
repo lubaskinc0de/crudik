@@ -10,7 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.config.loader import Config
-from crudik.bootstrap.di.container import get_async_container
+from crudik.adapters.di.container import get_async_container
 from tests.integration.api_client import TestAPIClient
 
 

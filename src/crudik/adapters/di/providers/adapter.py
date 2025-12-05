@@ -5,9 +5,11 @@ from bazario.asyncio.resolvers.dishka import DishkaResolver
 from dishka import AnyOf, AsyncContainer, Provider, Scope, WithParents, provide, provide_all
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
-from crudik.adapters.auth.handlers import UserCreatedHandler
+from crudik.adapters.auth.event_handlers import UserCreatedHandler
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProvider
 from crudik.adapters.db.config import DbConfig
+from crudik.adapters.db.gateway.auth_user import SAAuthUserGateway
+from crudik.adapters.db.gateway.user import SAUserGateway
 from crudik.application.common.event.user import UserCreated
 from crudik.application.common.uow import UoW
 
@@ -20,6 +22,11 @@ class AdapterProvider(Provider):
     )
     id_providers = provide_all(
         WithParents[WebAuthUserIdProvider],
+        scope=Scope.REQUEST,
+    )
+    gateways = provide_all(
+        WithParents[SAUserGateway],
+        WithParents[SAAuthUserGateway],
         scope=Scope.REQUEST,
     )
 

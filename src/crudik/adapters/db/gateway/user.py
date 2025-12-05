@@ -1,12 +1,16 @@
 from typing import override
 
-from crudik.adapters.db.gateway.base import SAGateway
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from crudik.application.common.gateway.user import UserGateway
 from crudik.entities.common.identifiers import UserId
 from crudik.entities.user import User
 
 
-class SAUserGateway(UserGateway, SAGateway):
+class SAUserGateway(UserGateway):
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
     @override
     async def get(self, user_id: UserId) -> User | None:
         return await self._session.get(User, user_id)

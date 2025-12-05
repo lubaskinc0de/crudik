@@ -24,6 +24,8 @@ class CreateUser:
         user = User(user_id)
 
         self.uow.add(user)
+
+        await self.uow.flush([user])
         await self.publisher.publish(UserCreated(user_id))
         await self.uow.commit()
 

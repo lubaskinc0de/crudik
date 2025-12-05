@@ -7,6 +7,7 @@ from crudik.application.user.create import CreateUser, CreateUserOutput
 router = APIRouter(
     tags=["Users"],
     route_class=DishkaRoute,
+    prefix="/users",
 )
 
 

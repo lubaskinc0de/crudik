@@ -2,7 +2,8 @@ from typing import override
 
 from fastapi import Request
 
-from crudik.adapters.auth.idp.base import AuthUserIdProvider, UnauthorizedError, UnauthorizedReason
+from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
+from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.auth.model import AuthUserId
 from crudik.adapters.base import adapter
 from crudik.entities import config

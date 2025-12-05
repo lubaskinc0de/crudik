@@ -4,7 +4,7 @@ from typing import Protocol
 from crudik.adapters.auth.model import AuthUserId
 
 
-class AuthUserIdProvider(Protocol):
+class AuthUserGateway(Protocol):
     @abstractmethod
-    async def get_auth_user_id(self) -> AuthUserId:
+    async def is_exists(self, auth_user_id: AuthUserId) -> bool:
         raise NotImplementedError
