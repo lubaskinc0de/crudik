@@ -9,6 +9,7 @@ env_retort = Retort(strict_coercion=False)
 
 
 def env[T = str](name: str, tp: type[T] | None = None, env_prefix: str = ENV_PREFIX) -> T:
+    """Loads env var by name, parses to specified type, raises RuntimeError if missing or invalid."""
     variable_name = f"{env_prefix}_{name}"
     try:
         return env_retort.load(os.environ[variable_name], tp if tp is not None else str)  # type: ignore[return-value]

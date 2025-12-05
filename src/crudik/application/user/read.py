@@ -9,15 +9,20 @@ from crudik.entities.errors.base import AccessDeniedError
 
 
 class ReadUserOutput(BaseModel):
+    """Response model containing user data retrieved from the system."""
+
     id: UserId
 
 
 @interactor
 class ReadUser:
+    """Use case interactor for reading user data."""
+
     gateway: UserGateway
     idp: UserIdProvider
 
     async def execute(self, user_id: UserId) -> ReadUserOutput:
+        """Retrieves user data by ID, verifies the user exists, and ensures the requester has access to the data."""
         current_user = await self.idp.get_user()
         if (user := await self.gateway.get(user_id)) is None:
             raise UserNotFoundError(user_id=user_id)

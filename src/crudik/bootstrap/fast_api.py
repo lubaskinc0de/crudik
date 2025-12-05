@@ -32,11 +32,13 @@ log_config = {
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """FastAPI lifespan context manager that handles DI container lifecycle during application startup and shutdown."""
     yield
     await app.state.dishka_container.close()
 
 
 def create_app() -> FastAPI:
+    """Creates and configures the FastAPI application instance with routers, error handlers, and DI container."""
     app = FastAPI(
         lifespan=lifespan,
         root_path="/api",
@@ -55,6 +57,7 @@ def create_app() -> FastAPI:
 
 
 def run_api() -> None:
+    """Starts the FastAPI application server using uvicorn on the configured host and port."""
     bind = "0.0.0.0"
     uvicorn.run(
         create_app(),

@@ -6,6 +6,8 @@ from crudik.entities import config
 
 @config
 class DbConfig:
+    """Database connection configuration parameters."""
+
     user: str
     password: str
     host: str
@@ -14,6 +16,7 @@ class DbConfig:
 
     @classmethod
     def from_env(cls) -> Self:
+        """Creates database configuration by reading connection parameters from environment variables."""
         return cls(
             user=env("DB_USER"),
             password=env("DB_PASSWORD"),
@@ -24,6 +27,7 @@ class DbConfig:
 
     @property
     def connection_url(self) -> str:
+        """Constructs and returns the SQLAlchemy asyncpg connection URL string for database connections."""
         user = self.user
         password = self.password
         host = self.host

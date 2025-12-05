@@ -17,6 +17,7 @@ router = APIRouter(
 async def create_user(
     command: FromDishka[CreateUser],
 ) -> CreateUserOutput:
+    """HTTP endpoint for creating a new user."""
     return await command.execute()
 
 
@@ -25,4 +26,5 @@ async def read_user(
     command: FromDishka[ReadUser],
     user_id: UserId,
 ) -> ReadUserOutput:
+    """HTTP endpoint for retrieving user data by ID."""
     return await command.execute(user_id)

@@ -13,6 +13,8 @@ from crudik.application.errors.user import UserNotFoundError
 
 
 class UserCreatedHandler(NotificationHandler[UserCreated]):
+    """Event handler that creates an AuthUser record when a User entity is created."""
+
     def __init__(
         self,
         *args: Any,
@@ -30,6 +32,7 @@ class UserCreatedHandler(NotificationHandler[UserCreated]):
 
     @override
     async def handle(self, notification: UserCreated) -> None:
+        """Handles UserCreated event by linking the new user with the current authentication user ID."""
         auth_user_id = await self._idp.get_auth_user_id()
         if await self._auth_user_gateway.is_exists(auth_user_id):
             raise AuthUserAlreadyExistsError(auth_user_id=auth_user_id)

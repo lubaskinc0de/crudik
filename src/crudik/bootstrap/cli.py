@@ -8,7 +8,7 @@ from crudik.bootstrap.fast_api import run_api
 
 
 def run_migrations() -> None:
-    """Run database migrations to head."""
+    """Applies all pending database migrations to bring the database schema to the latest version."""
     alembic_path_gen = get_alembic_config_path()
     alembic_path = str(next(alembic_path_gen))
     alembic.config.main(
@@ -20,7 +20,7 @@ def run_migrations() -> None:
 
 
 def autogenerate_migrations(message: str) -> None:
-    """Autogenerate migration with given message."""
+    """Generates a new Alembic migration file by detecting schema changes and using the provided message."""
     alembic_path_gen = get_alembic_config_path()
     alembic_path = str(next(alembic_path_gen))
     alembic.config.main(
@@ -32,7 +32,7 @@ def autogenerate_migrations(message: str) -> None:
 
 
 def create_parser() -> argparse.ArgumentParser:
-    """Create CLI argument parser."""
+    """Creates and configures the command-line argument parser with all available commands and subcommands."""
     parser = argparse.ArgumentParser(
         prog="crudik",
         description="CRUDIK CLI Tool",
@@ -70,7 +70,7 @@ Examples:
 
 
 def main() -> None:
-    """Main CLI entry point."""
+    """Main entry point for the CLI application that parses arguments and executes the requested command."""
     parser = create_parser()
     args = parser.parse_args()
 

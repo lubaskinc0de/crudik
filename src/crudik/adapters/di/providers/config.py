@@ -6,5 +6,7 @@ from crudik.adapters.db.config import DbConfig
 
 
 class ConfigProvider(Provider):
+    """Dishka provider that exposes configuration objects from the context."""
+
     scope: BaseScope | None = Scope.APP
     configs = from_context(Config) + from_context(DbConfig) + from_context(WebAuthUserIdProviderConfig)

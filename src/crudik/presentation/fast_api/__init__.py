@@ -8,11 +8,13 @@ from crudik.presentation.fast_api.routers.user import router as users_router
 
 
 def include_routers(app: FastAPI) -> None:
+    """Registers all API routers with the FastAPI application."""
     app.include_router(root_router)
     app.include_router(users_router)
 
 
 def include_exception_handlers(app: FastAPI) -> None:
+    """Registers global exception handlers for converting exceptions to HTTP error responses."""
     app.add_exception_handler(Exception, app_error_handler)
 
 

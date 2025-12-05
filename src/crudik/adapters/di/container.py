@@ -10,6 +10,7 @@ from crudik.adapters.di.providers.interactor import InteractorProvider
 
 
 def get_async_container(config: Config) -> AsyncContainer:
+    """Creates and configures the async DI container with all providers and initial context values."""
     providers = [
         ConfigProvider(),
         FastapiProvider(),

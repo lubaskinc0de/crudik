@@ -14,16 +14,21 @@ retort = Retort()
 
 @config
 class TomlConfig:
+    """Configuration structure loaded from TOML file matching the file's schema."""
+
     auth: WebAuthUserIdProviderConfig
 
 
 @config
 class Config:
+    """Main application configuration."""
+
     db: DbConfig
     web_auth_user_id_provider: WebAuthUserIdProviderConfig
 
     @classmethod
     def load(cls) -> Self:
+        """Loads configuration."""
         config_path = env("CONFIG_PATH", Path)
         with config_path.open("rb") as f:
             toml_config = retort.load(toml_rs.load(f), TomlConfig)

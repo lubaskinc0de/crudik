@@ -11,15 +11,20 @@ from crudik.entities.user import User
 
 
 class CreateUserOutput(BaseModel):
+    """Response model containing the info about newly created user."""
+
     id: UserId
 
 
 @interactor
 class CreateUser:
+    """Use case interactor for creating a new user entity, publishes the UserCreated event."""
+
     publisher: Publisher
     uow: UoW
 
     async def execute(self) -> CreateUserOutput:
+        """Creates a new user with a generated ID, persists it, publishes UserCreated event, and returns the user ID."""
         user_id = uuid4()
         user = User(user_id)
 

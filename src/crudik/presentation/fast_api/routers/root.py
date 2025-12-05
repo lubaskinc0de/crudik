@@ -12,4 +12,5 @@ router = APIRouter(
 
 @router.get("/ping/")
 async def ping(command: FromDishka[Ping]) -> str:
+    """HTTP endpoint for health check that returns 'pong'."""
     return await command.execute()

@@ -16,6 +16,8 @@ from crudik.application.common.uow import UoW
 
 
 class AdapterProvider(Provider):
+    """Dishka provider that registers all adapter implementations."""
+
     bazario_dispatcher = provide(WithParents[Dispatcher], scope=Scope.REQUEST)
     event_handlers = provide_all(
         UserCreatedHandler,
@@ -34,6 +36,7 @@ class AdapterProvider(Provider):
 
     @provide(scope=Scope.APP)
     async def get_engine(self, config: DbConfig) -> AsyncIterator[AsyncEngine]:
+        """Provides SQLAlchemy async engine instance with proper lifecycle management."""
         engine = create_async_engine(
             config.connection_url,
             future=True,
@@ -46,6 +49,7 @@ class AdapterProvider(Provider):
         self,
         engine: AsyncEngine,
     ) -> async_sessionmaker[AsyncSession]:
+        """Provides SQLAlchemy async session factory configured for the application."""
         session_factory = async_sessionmaker(
             engine,
             expire_on_commit=False,
@@ -58,15 +62,18 @@ class AdapterProvider(Provider):
         self,
         session_factory: async_sessionmaker[AsyncSession],
     ) -> AsyncIterator[AnyOf[AsyncSession, UoW]]:
+        """Provides a request-scoped database session that also implements the UoW protocol."""
         async with session_factory() as session:
             yield session
 
     @provide(scope=Scope.REQUEST)
     async def get_bazario_resolver(self, request_container: AsyncContainer) -> Resolver:
+        """Provides Bazario event resolver that uses Dishka container for dependency injection."""
         return DishkaResolver(request_container)
 
     @provide(scope=Scope.APP)
     async def get_bazario_registry(self) -> Registry:
+        """Provides Bazario event registry with all registered notification handlers."""
         registry = Registry()
         registry.add_notification_handlers(UserCreated, UserCreatedHandler)
         return registry
