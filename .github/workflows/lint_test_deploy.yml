@@ -1,11 +1,5 @@
 name: lint_test_deploy
 on: [push, pull_request]
-
-env:
-  MAIN_BRANCH: master
-  DEV_BRANCH: dev
-  TAG_PREFIX: v
-
 jobs:
     lint:
         name: "Run linters"
@@ -43,7 +37,7 @@ jobs:
 
     bump_version:
         name: "Bump version"
-        if: github.ref == format('refs/heads/{0}', env.MAIN_BRANCH)
+        if: github.ref == 'refs/heads/master'
         needs: [lint, test]
         runs-on: ubuntu-latest
         permissions:
@@ -60,7 +54,7 @@ jobs:
               uses: anothrNick/github-tag-action@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  TAG_PREFIX: ${{ env.TAG_PREFIX }}
+                  TAG_PREFIX: v
                   PRERELEASE: false
                   DEFAULT_BUMP: patch
 
@@ -82,10 +76,7 @@ jobs:
 
     build_and_push:
         name: "Build and push"
-        if: always() && (
-            (github.ref == format('refs/heads/{0}', env.MAIN_BRANCH) || 
-             github.ref == format('refs/heads/{0}', env.DEV_BRANCH)) && 
-            (needs.lint.result == 'success' && needs.test.result == 'success'))
+        if: always() && ((github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev') && (needs.lint.result == 'success' && needs.test.result == 'success'))
         needs: [lint, test, bump_version]
         runs-on: ubuntu-latest
         permissions:
@@ -113,7 +104,7 @@ jobs:
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using bumped version: $VERSION"
                   # Если тег уже существует (ручной релиз)
-                  elif [[ "${{ github.ref }}" == refs/tags/${{ env.TAG_PREFIX }}* ]]; then
+                  elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
                     VERSION="${GITHUB_REF#refs/tags/}"
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using existing tag: $VERSION"
@@ -130,7 +121,7 @@ jobs:
                   echo "Github ref: ${{ github.ref }}"
                   echo "Version: ${{ steps.get_version.outputs.VERSION }}"
 
-                  if [ "${{ github.ref }}" == "refs/heads/${{ env.DEV_BRANCH }}" ]; then
+                  if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
                     echo "TAG_SUFFIX=-stage" >> $GITHUB_OUTPUT
                     echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}-stage" >> $GITHUB_OUTPUT
                   else
