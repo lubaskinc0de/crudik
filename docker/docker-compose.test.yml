@@ -9,15 +9,15 @@ services:
     tests:
         restart: no
         build:
-            context: .
-            dockerfile: Dockerfile.test
+            context: ../
+            dockerfile: docker/Dockerfile.test
         env_file:
-            - "../.config/.env"
+            - "../.config/.env.tests"
         volumes:
             - "../.config/config.toml:/etc/crudik/config.toml"
         container_name: tests
         environment:
-            - API_URL=http://nginx:8000
+            - API_URL=http://nginx:80
         depends_on:
             nginx:
                 condition: service_healthy

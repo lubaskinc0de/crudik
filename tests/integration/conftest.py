@@ -5,13 +5,12 @@ import aiohttp
 import pytest
 from aiohttp import ClientSession
 from dishka import AsyncContainer
-from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.config.loader import Config
 from crudik.adapters.di.container import get_async_container
-from tests.integration.api_client import TestAPIClient
+from tests.integration.api_client import APIClient
 
 
 @pytest.fixture
@@ -25,11 +24,6 @@ async def container() -> AsyncIterator[AsyncContainer]:
 async def session(container: AsyncContainer) -> AsyncIterator[AsyncSession]:
     async with container() as r:
         yield (await r.get(AsyncSession))
-
-
-@pytest.fixture
-async def redis(container: AsyncContainer) -> Redis:
-    return await container.get(Redis)
 
 
 @pytest.fixture(autouse=True)
@@ -64,11 +58,11 @@ async def http_session(base_url: str) -> AsyncIterator[ClientSession]:
         yield session
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def base_url() -> str:
     return os.environ["API_URL"]
 
 
 @pytest.fixture
-def client(http_session: ClientSession) -> TestAPIClient:
-    return TestAPIClient(session=http_session)
+def client(http_session: ClientSession) -> APIClient:
+    return APIClient(session=http_session)

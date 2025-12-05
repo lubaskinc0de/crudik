@@ -4,6 +4,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from crudik.adapters.auth.errors.auth_user import AuthUserAlreadyExistsError
 from crudik.adapters.auth.errors.base import UnauthorizedError
 from crudik.entities.errors.base import AppError, app_error
 
@@ -22,6 +23,7 @@ class ErrorResponse(BaseModel):
 
 error_to_http_status: dict[type[AppError], int] = {
     UnauthorizedError: 401,
+    AuthUserAlreadyExistsError: 409,
 }
 
 
