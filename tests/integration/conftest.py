@@ -15,6 +15,7 @@ from tests.integration.api_client import APIClient
 
 @pytest.fixture
 async def container() -> AsyncIterator[AsyncContainer]:
+    """Create and provide async DI container for tests."""
     container = get_async_container(Config.load())
     yield container
     await container.close()
@@ -22,6 +23,7 @@ async def container() -> AsyncIterator[AsyncContainer]:
 
 @pytest.fixture
 async def session(container: AsyncContainer) -> AsyncIterator[AsyncSession]:
+    """Create and provide database session for tests."""
     async with container() as r:
         yield (await r.get(AsyncSession))
 
@@ -30,6 +32,7 @@ async def session(container: AsyncContainer) -> AsyncIterator[AsyncSession]:
 async def gracefully_teardown(
     session: AsyncSession,
 ) -> AsyncIterable[None]:
+    """Automatically truncate all tables after each test."""
     yield
     await session.execute(
         text("""
@@ -54,15 +57,18 @@ async def gracefully_teardown(
 
 @pytest.fixture
 async def http_session(base_url: str) -> AsyncIterator[ClientSession]:
+    """Create and provide HTTP client session for API tests."""
     async with aiohttp.ClientSession(base_url=base_url) as session:
         yield session
 
 
 @pytest.fixture
 def base_url() -> str:
+    """Get API base URL from environment variable."""
     return os.environ["API_URL"]
 
 
 @pytest.fixture
 def client(http_session: ClientSession) -> APIClient:
+    """Create and provide API client for tests."""
     return APIClient(session=http_session)
