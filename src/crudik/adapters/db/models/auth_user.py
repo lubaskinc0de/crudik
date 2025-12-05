@@ -1,4 +1,5 @@
 from sqlalchemy import UUID, Column, ForeignKey, Table, Text, UniqueConstraint
+from sqlalchemy.orm import relationship
 
 from crudik.adapters.auth.model import AuthUser
 from crudik.adapters.db.models.base import mapper_registry
@@ -12,4 +13,10 @@ auth_user_table = Table(
 )
 
 
-mapper_registry.map_imperatively(AuthUser, auth_user_table)
+mapper_registry.map_imperatively(
+    AuthUser,
+    auth_user_table,
+    properties={
+        "user": relationship("User", lazy="selectin"),
+    },
+)

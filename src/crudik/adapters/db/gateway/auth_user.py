@@ -4,7 +4,7 @@ from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.auth.common.gateway.auth_user import AuthUserGateway
-from crudik.adapters.auth.model import AuthUserId
+from crudik.adapters.auth.model import AuthUser, AuthUserId
 from crudik.adapters.db.models.auth_user import auth_user_table
 
 
@@ -19,3 +19,7 @@ class SAAuthUserGateway(AuthUserGateway):
                 select(exists().where(auth_user_table.c.auth_user_id == auth_user_id)),
             )
         ).scalar_one()
+
+    @override
+    async def get(self, auth_user_id: AuthUserId) -> AuthUser | None:
+        return await self._session.get(AuthUser, auth_user_id)

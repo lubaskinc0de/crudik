@@ -3,6 +3,8 @@ from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 
 from crudik.application.user.create import CreateUser, CreateUserOutput
+from crudik.application.user.read import ReadUser, ReadUserOutput
+from crudik.entities.common.identifiers import UserId
 
 router = APIRouter(
     tags=["Users"],
@@ -16,3 +18,11 @@ async def create_user(
     command: FromDishka[CreateUser],
 ) -> CreateUserOutput:
     return await command.execute()
+
+
+@router.get("/{user_id}")
+async def read_user(
+    command: FromDishka[ReadUser],
+    user_id: UserId,
+) -> ReadUserOutput:
+    return await command.execute(user_id)

@@ -7,6 +7,8 @@ from aiohttp import ClientResponse, ClientResponseError, ClientSession
 
 from crudik.adapters.auth.model import AuthUserId
 from crudik.application.user.create import CreateUserOutput
+from crudik.application.user.read import ReadUserOutput
+from crudik.entities.common.identifiers import UserId
 from crudik.presentation.fast_api.error_handlers import ErrorResponse
 
 retort = Retort()
@@ -48,6 +50,9 @@ class APIClient:
     def set_auth_user_id(self, auth_user_id: AuthUserId) -> None:
         self._headers["X-Auth-User"] = auth_user_id
 
+    def reset_auth_user_id(self) -> None:
+        del self._headers["X-Auth-User"]
+
     async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
         try:
             response.raise_for_status()
@@ -74,4 +79,12 @@ class APIClient:
             return await self._load_response(
                 response,
                 response_type=CreateUserOutput,
+            )
+
+    async def read_user(self, user_id: UserId) -> APIResponse[ReadUserOutput]:
+        url = f"/users/{user_id}"
+        async with self.session.get(url, headers=self._headers) as response:
+            return await self._load_response(
+                response,
+                response_type=ReadUserOutput,
             )

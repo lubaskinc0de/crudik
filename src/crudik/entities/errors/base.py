@@ -64,3 +64,9 @@ class AppError(Exception):
     @override
     def __str__(self) -> str:
         return f"{self.code}: {self.message}{'\n':<6}meta={self.meta}"
+
+
+@app_error
+class AccessDeniedError(AppError):
+    code: ClassVar[str] = "ACCESS_DENIED"
+    message: str = "Access denied"

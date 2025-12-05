@@ -6,7 +6,8 @@ from pydantic import BaseModel
 
 from crudik.adapters.auth.errors.auth_user import AuthUserAlreadyExistsError
 from crudik.adapters.auth.errors.base import UnauthorizedError
-from crudik.entities.errors.base import AppError, app_error
+from crudik.application.errors.user import UserNotFoundError
+from crudik.entities.errors.base import AccessDeniedError, AppError, app_error
 
 
 @app_error
@@ -24,6 +25,8 @@ class ErrorResponse(BaseModel):
 error_to_http_status: dict[type[AppError], int] = {
     UnauthorizedError: 401,
     AuthUserAlreadyExistsError: 409,
+    UserNotFoundError: 404,
+    AccessDeniedError: 403,
 }
 
 
