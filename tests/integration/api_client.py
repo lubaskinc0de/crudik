@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self, TypeVar
+from typing import Self
 
 from adaptix import Retort
 from adaptix.load_error import LoadError
@@ -12,7 +12,6 @@ from crudik.entities.common.identifiers import UserId
 from crudik.presentation.fast_api.error_handlers import ErrorResponse
 
 retort = Retort()
-T = TypeVar("T")
 
 
 @dataclass(slots=True, frozen=True)
