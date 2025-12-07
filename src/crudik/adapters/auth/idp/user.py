@@ -1,11 +1,16 @@
 from typing import override
 
+import structlog
+
 from crudik.adapters.auth.common.gateway.auth_user import AuthUserGateway
 from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
 from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.base import adapter
 from crudik.application.common.idp import UserIdProvider
+from crudik.application.common.logger import Logger
 from crudik.entities.user import User
+
+logger: Logger = structlog.get_logger(__name__)
 
 
 @adapter
@@ -23,6 +28,7 @@ class UserIdProviderImpl(UserIdProvider):
         """
         auth_user_id = await self.auth_user_idp.get_auth_user_id()
         if (auth_user := await self.auth_user_gateway.get(auth_user_id)) is None:
+            await logger.ainfo("Request unauthroized due to auth user is not exists", auth_user_id=auth_user_id)
             raise UnauthorizedError(reason=UnauthorizedReason.INVALID_AUTH_USER_ID)
 
         return auth_user.user
