@@ -121,7 +121,7 @@ jobs:
                   echo "Version: ${{ steps.get_version.outputs.VERSION }}"
 
                   if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
-                    echo "TAG_SUFFIX=-stage" >> $GITHUB_OUTPUT
+                    echo "TAG_SUFFIX=-dev" >> $GITHUB_OUTPUT
                     echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}-dev" >> $GITHUB_OUTPUT
                   else
                     echo "TAG_SUFFIX=" >> $GITHUB_OUTPUT
