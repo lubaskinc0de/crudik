@@ -21,11 +21,6 @@ jobs:
             - name: Mypy
               run: mypy
 
-            - name: SonarQube Scan
-              uses: SonarSource/sonarqube-scan-action@v6
-              env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
     test:
         name: "Run tests"
         runs-on: ubuntu-latest
