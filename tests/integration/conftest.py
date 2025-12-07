@@ -75,7 +75,7 @@ def base_url() -> str:
 
 
 @pytest.fixture
-def client(http_session: ClientSession, app_config: Config) -> APIClient:
+def api_client(http_session: ClientSession, app_config: Config) -> APIClient:
     """Create and provide API client for tests."""
     return APIClient(
         session=http_session,

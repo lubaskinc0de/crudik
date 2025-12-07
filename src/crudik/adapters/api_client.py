@@ -92,7 +92,7 @@ class APIClient:
         """Remove HTTP header."""
         del self._headers[header]
 
-    def authenticate(self, auth_user_id: AuthUserId) -> AuthContext:
+    def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
         """Set auth user ID for requests."""
         return AuthContext(self, auth_user_id, self._config)
 
