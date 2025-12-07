@@ -10,7 +10,7 @@ services:
         restart: no
         build:
             context: ../
-            dockerfile: docker/Dockerfile.test
+            dockerfile: docker/tests.Dockerfile
         env_file:
             - "../.config/.env.tests"
         volumes:
