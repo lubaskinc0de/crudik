@@ -7,7 +7,7 @@ from tests.integration.user.utils import create_user
 async def test_ok(client: APIClient) -> None:
     """Test successful user read by id."""
     auth_user_id = "1"
-    with client.authenticate(auth_user_id):
+    with client.authenticate(auth_user_id=auth_user_id):
         new_user_id = await create_user(client)
         response = await client.read_user(new_user_id)
 
@@ -19,7 +19,7 @@ async def test_not_exists(client: APIClient) -> None:
     """Test that reading non-existent user returns 404 error."""
     auth_user_id = "1"
     fake_user_id = uuid4()
-    with client.authenticate(auth_user_id):
+    with client.authenticate(auth_user_id=auth_user_id):
         await create_user(client)
         response = await client.read_user(fake_user_id)
 
@@ -34,10 +34,10 @@ async def test_by_other_user(client: APIClient) -> None:
     """Test that reading another user's data returns 403 error."""
     first_auth_user_id = "1"
     second_auth_user_id = "2"
-    with client.authenticate(first_auth_user_id):
+    with client.authenticate(auth_user_id=first_auth_user_id):
         first_user_id = await create_user(client)
 
-    with client.authenticate(second_auth_user_id):
+    with client.authenticate(auth_user_id=second_auth_user_id):
         await create_user(client)
         response = await client.read_user(first_user_id)
 

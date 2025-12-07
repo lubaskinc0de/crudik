@@ -4,7 +4,7 @@ from tests.integration.user.utils import create_user
 
 async def test_ok(client: APIClient) -> None:
     """Test successful user creation."""
-    with client.authenticate("1"):
+    with client.authenticate(auth_user_id="1"):
         response = await client.create_user()
 
     response.assert_status(200).ensure_ok()
@@ -14,7 +14,7 @@ async def test_already_exists(client: APIClient) -> None:
     """Test that creating a user with existing auth_user_id returns 409 error."""
     auth_user_id = "1"
 
-    with client.authenticate(auth_user_id):
+    with client.authenticate(auth_user_id=auth_user_id):
         await create_user(client)
         response = await client.create_user()
 
