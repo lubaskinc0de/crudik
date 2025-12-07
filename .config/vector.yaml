@@ -1,0 +1,89 @@
+sources:
+    logs:
+        type: docker_logs
+        exclude_containers:
+            - migrations
+            - db
+            - nginx
+            - grafana
+            - vector
+            - loki
+
+transforms:
+    logs_parser:
+        inputs:
+            - "logs"
+        type: "remap"
+        source: |
+            parsed, err = parse_json(string!(.message))
+
+            if !is_null(err) {
+              abort
+            }
+
+            if is_null(parsed.event) {
+              abort
+            }
+
+            .log_msg = strip_ansi_escape_codes!(parsed.event)
+            .level = parsed.level
+            .timestamp = parsed.timestamp
+            .logger = parsed.logger
+
+            del(parsed.level)
+            del(parsed.event)
+            del(parsed.logger)
+
+            .user_id = if !is_null(parsed.user_id) {
+                parsed.user_id
+                del(parsed.user_id)
+            } else if !is_null(parsed.user) {
+                if !is_null(parsed.user.id) {
+                  usrid = parsed.user.id
+                  del(parsed.user.id)
+                  usrid
+                } else {
+                  ""
+                }
+            } else {
+                ""
+            }
+
+            .trace_id = if !is_null(parsed.trace_id) {
+                parsed.trace_id
+                del(parsed.trace_id)
+            } else {
+                ""
+            }
+
+            if !is_null(parsed.container_name) {
+              .container_name = parsed.container_name
+              del(parsed.container_name)
+            }
+
+            del(.label)
+            del(.container_created_at)
+            del(.container_id)
+            del(.host)
+            del(.image)
+            del(.source_type)
+            del(.stream)
+
+            .message = parsed
+
+sinks:
+    loki_sink:
+        inputs:
+            - logs_parser
+        type: loki
+        healthcheck:
+            enabled: false
+        endpoint: http://loki:3100
+        encoding:
+            codec: "json"
+        batch:
+            max_events: 500
+            timeout_secs: 1
+        labels:
+            container_name: "{{container_name}}"
+            level: "{{level}}"

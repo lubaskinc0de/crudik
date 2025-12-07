@@ -7,27 +7,10 @@ from fastapi import FastAPI
 
 from crudik.adapters.config.loader import Config
 from crudik.adapters.di.container import get_async_container
+from crudik.adapters.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
 
-log_config = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "format": "%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-    },
-    "root": {
-        "level": "DEBUG",
-        "handlers": ["console"],
-    },
-}
+log_config = configure_structlog()
 
 
 @asynccontextmanager

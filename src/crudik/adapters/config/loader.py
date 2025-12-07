@@ -30,6 +30,7 @@ class Config:
     def load(cls) -> Self:
         """Loads configuration."""
         config_path = env("CONFIG_PATH", Path)
+
         with config_path.open("rb") as f:
             toml_config = retort.load(toml_rs.load(f), TomlConfig)
 

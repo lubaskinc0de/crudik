@@ -15,16 +15,16 @@ router = APIRouter(
 
 @router.post("/")
 async def create_user(
-    command: FromDishka[CreateUser],
+    interactor: FromDishka[CreateUser],
 ) -> CreateUserOutput:
     """HTTP endpoint for creating a new user."""
-    return await command.execute()
+    return await interactor.execute()
 
 
 @router.get("/{user_id}")
 async def read_user(
-    command: FromDishka[ReadUser],
+    interactor: FromDishka[ReadUser],
     user_id: UserId,
 ) -> ReadUserOutput:
     """HTTP endpoint for retrieving user data by ID."""
-    return await command.execute(user_id)
+    return await interactor.execute(user_id)

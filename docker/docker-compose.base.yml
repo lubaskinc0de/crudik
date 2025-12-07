@@ -1,28 +1,29 @@
 services:
     grafana:
         image: grafana/grafana:12.1.4
+        build:
+            context: ../
+            dockerfile: docker/grafana.Dockerfile
+        restart: unless-stopped
         container_name: grafana
         ports:
             - "3000:3000"
-        environment:
-            GF_INSTALL_PLUGINS: yesoreyeram-infinity-datasource
-        volumes:
-            - ../.config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-            - ../.config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
 
     nginx:
         image: nginx:1.29.3
+        restart: unless-stopped
         container_name: nginx
         ports:
             - "80:80"
         volumes:
             - ../.config/nginx.conf:/etc/nginx/nginx.conf
         healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost/ping/" ]
+            test: ["CMD", "curl", "-f", "http://localhost/ping/"]
             interval: 4s
 
     migrations:
         command: ["crudik", "migrations", "apply"]
+        container_name: migrations
         restart: no
         build:
             context: ../
@@ -32,8 +33,8 @@ services:
 
     api:
         container_name: api
-        restart: on-failure
-        command: [ "crudik", "run", "api" ]
+        restart: unless-stopped
+        command: ["crudik", "run", "api"]
         expose:
             - 5000
         build:
@@ -46,13 +47,32 @@ services:
 
     db:
         container_name: db
+        restart: unless-stopped
         image: postgres:17
         env_file:
             - ../.config/.env.pg
         ports:
             - 5432:5432
         healthcheck:
-            test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
             interval: 2s
         volumes:
-          - ../.config/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+            - ../.config/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+
+    vector:
+        container_name: vector
+        build:
+            context: ../
+            dockerfile: docker/vector.Dockerfile
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+
+    loki:
+        build:
+            context: ../
+            dockerfile: docker/loki.Dockerfile
+        container_name: loki
+        command: ["-config.file=/etc/loki/config.yaml"]
+        expose:
+            - "3100"
+        restart: unless-stopped
