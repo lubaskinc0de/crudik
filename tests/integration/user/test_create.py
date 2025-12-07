@@ -4,19 +4,21 @@ from tests.integration.user.utils import create_user
 
 async def test_ok(client: APIClient) -> None:
     """Test successful user creation."""
-    client.set_auth_user_id("1")
+    with client.authenticate("1"):
+        response = await client.create_user()
 
-    (await client.create_user()).assert_status(200).unwrap()
+    response.assert_status(200).ensure_ok()
 
 
 async def test_already_exists(client: APIClient) -> None:
     """Test that creating a user with existing auth_user_id returns 409 error."""
     auth_user_id = "1"
-    await create_user(client, auth_user_id)
-    client.set_auth_user_id(auth_user_id)
 
-    error = (await client.create_user()).assert_status(409).unwrap_err()
+    with client.authenticate(auth_user_id):
+        await create_user(client)
+        response = await client.create_user()
 
+    error = response.assert_status(409).ensure_err()
     assert error.code == "AUTH_USER_ALREADY_EXISTS"
     assert error.meta is not None
     assert "auth_user_id" in error.meta
@@ -25,6 +27,7 @@ async def test_already_exists(client: APIClient) -> None:
 
 async def test_unauthorized(client: APIClient) -> None:
     """Test that creating a user without authentication returns 401 error."""
-    error = (await client.create_user()).assert_status(401).unwrap_err()
+    response = await client.create_user()
 
+    error = response.assert_status(401).ensure_err()
     assert error.code == "UNAUTHORIZED"

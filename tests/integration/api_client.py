@@ -16,21 +16,18 @@ retort = Retort()
 
 @dataclass(slots=True, frozen=True)
 class APIResponse[T]:
-    """Wrapper for API response with content, status and error handling."""
-
     content: T | None
     http_response: ClientResponse
     status: int
     error: ErrorResponse | None = None
 
     def unwrap_err(self) -> ErrorResponse:
-        """Unwrap error response or raise ValueError if no error."""
         if self.error is None:
             msg = f"Cannot unwrap error, content = {self.content}"
             raise ValueError(msg)
         return self.error
 
-    def unwrap(self) -> T:
+    def ensure_ok(self) -> T:
         """Unwrap successful response or raise ValueError if error occurred."""
         if self.content is None:
             msg = f"Cannot unwrap response, status = {self.status}, error = {self.error}"
@@ -41,6 +38,20 @@ class APIResponse[T]:
         """Assert that response status matches expected value."""
         assert self.status == status
         return self
+
+
+class AuthContext:
+    def __init__(self, api_client: "APIClient", auth_user_id: AuthUserId) -> None:
+        self._api_client = api_client
+        self._auth_user_id = auth_user_id
+
+    def __enter__(self) -> None:
+        self._api_client.add_header("X-Auth-User", self._auth_user_id)
+
+    def __exit__(self, *exc_info: object) -> None:
+        self._api_client.remove_header("X-Auth-User")
+        if exc_info[0] is not None:  # exc type
+            raise exc_info[1]  # type: ignore[misc] # exc value
 
 
 class APIClient:
@@ -54,13 +65,16 @@ class APIClient:
         """Set custom HTTP headers for requests."""
         self._headers = headers
 
-    def set_auth_user_id(self, auth_user_id: AuthUserId) -> None:
-        """Set authentication user ID in headers."""
-        self._headers["X-Auth-User"] = auth_user_id
+    def add_header(self, header: str, value: str) -> None:
+        """Add HTTP header."""
+        self._headers[header] = value
 
-    def reset_auth_user_id(self) -> None:
-        """Remove authentication user ID from headers."""
-        del self._headers["X-Auth-User"]
+    def remove_header(self, header: str) -> None:
+        """Remove HTTP header."""
+        del self._headers[header]
+
+    def authenticate(self, auth_user_id: AuthUserId) -> AuthContext:
+        return AuthContext(self, auth_user_id)
 
     async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
         """Load response content or error from HTTP response."""
