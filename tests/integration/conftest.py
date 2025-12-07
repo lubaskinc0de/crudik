@@ -10,7 +10,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.config.loader import Config
 from crudik.adapters.di.container import get_async_container
-from tests.integration.api_client import APIClient
+from tests.integration.api_client import APIClient, APIClientConfig
+
+
+@pytest.fixture
+async def app_config() -> Config:
+    """Load and provide app config."""
+    return Config.load()
 
 
 @pytest.fixture
@@ -69,6 +75,11 @@ def base_url() -> str:
 
 
 @pytest.fixture
-def client(http_session: ClientSession) -> APIClient:
+def client(http_session: ClientSession, app_config: Config) -> APIClient:
     """Create and provide API client for tests."""
-    return APIClient(session=http_session)
+    return APIClient(
+        session=http_session,
+        config=APIClientConfig(
+            auth_user_id_header=app_config.web_auth_user_id_provider.user_id_header,
+        ),
+    )

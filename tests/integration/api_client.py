@@ -8,6 +8,7 @@ from aiohttp import ClientResponse, ClientResponseError, ClientSession
 from crudik.adapters.auth.model import AuthUserId
 from crudik.application.user.create import CreateUserOutput
 from crudik.application.user.read import ReadUserOutput
+from crudik.entities.common.config import config
 from crudik.entities.common.identifiers import UserId
 from crudik.presentation.fast_api.error_handlers import ErrorResponse
 
@@ -43,20 +44,28 @@ class APIResponse[T]:
         return self
 
 
+@config
+class APIClientConfig:
+    """Config for APIClient."""
+
+    auth_user_id_header: str
+
+
 class AuthContext:
     """Context manager for setting authentication."""
 
-    def __init__(self, api_client: "APIClient", auth_user_id: AuthUserId) -> None:
+    def __init__(self, api_client: "APIClient", auth_user_id: AuthUserId, config: APIClientConfig) -> None:
         self._api_client = api_client
         self._auth_user_id = auth_user_id
+        self._config = config
 
     def __enter__(self) -> None:
         """Set authentication header for the duration of the context."""
-        self._api_client.add_header("X-Auth-User", self._auth_user_id)
+        self._api_client.add_header(self._config.auth_user_id_header, self._auth_user_id)
 
     def __exit__(self, *exc_info: object) -> None:
         """Remove authentication header after the context."""
-        self._api_client.remove_header("X-Auth-User")
+        self._api_client.remove_header(self._config.auth_user_id_header)
         if exc_info[0] is not None:  # exc type
             raise exc_info[1]  # type: ignore[misc] # exc value
 
@@ -64,9 +73,10 @@ class AuthContext:
 class APIClient:
     """Client for making API requests."""
 
-    def __init__(self, session: ClientSession) -> None:
+    def __init__(self, session: ClientSession, config: APIClientConfig) -> None:
         self.session = session
         self._headers: dict[str, str] = {}
+        self._config = config
 
     def set_headers(self, headers: dict[str, str]) -> None:
         """Set custom HTTP headers for requests."""
@@ -82,7 +92,7 @@ class APIClient:
 
     def authenticate(self, auth_user_id: AuthUserId) -> AuthContext:
         """Set auth user ID for requests."""
-        return AuthContext(self, auth_user_id)
+        return AuthContext(self, auth_user_id, self._config)
 
     async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
         """Load response content or error from HTTP response."""
