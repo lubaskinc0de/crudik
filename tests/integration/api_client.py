@@ -22,6 +22,7 @@ class APIResponse[T]:
     error: ErrorResponse | None = None
 
     def ensure_err(self) -> ErrorResponse:
+        """Unwrap error response or raise ValueError if there is no error."""
         if self.error is None:
             msg = f"Cannot unwrap error, content = {self.content}"
             raise ValueError(msg)
@@ -41,6 +42,8 @@ class APIResponse[T]:
 
 
 class AuthContext:
+    """Context manager for setting authentication."""
+
     def __init__(self, api_client: "APIClient", auth_user_id: AuthUserId) -> None:
         self._api_client = api_client
         self._auth_user_id = auth_user_id
@@ -74,6 +77,7 @@ class APIClient:
         del self._headers[header]
 
     def authenticate(self, auth_user_id: AuthUserId) -> AuthContext:
+        """Set auth user ID for requests."""
         return AuthContext(self, auth_user_id)
 
     async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
