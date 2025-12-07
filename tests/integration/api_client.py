@@ -21,7 +21,7 @@ class APIResponse[T]:
     status: int
     error: ErrorResponse | None = None
 
-    def unwrap_err(self) -> ErrorResponse:
+    def ensure_err(self) -> ErrorResponse:
         if self.error is None:
             msg = f"Cannot unwrap error, content = {self.content}"
             raise ValueError(msg)
