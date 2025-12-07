@@ -1,5 +1,5 @@
+from crudik.adapters.api_client import APIClient
 from crudik.entities.common.identifiers import UserId
-from tests.integration.api_client import APIClient
 
 
 async def create_user(client: APIClient) -> UserId:

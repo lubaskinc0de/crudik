@@ -1,4 +1,4 @@
-from tests.integration.api_client import APIClient
+from crudik.adapters.api_client import APIClient
 from tests.integration.user.utils import create_user
 
 
