@@ -103,17 +103,16 @@ jobs:
             - name: Get version tag
               id: get_version
               run: |
-                  # Если это запуск после bump_version, используем новый тег
                   if [ -f "VERSION.txt" ]; then
                     VERSION=$(cat VERSION.txt)
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using bumped version: $VERSION"
-                  # Если тег уже существует (ручной релиз)
+
                   elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
                     VERSION="${GITHUB_REF#refs/tags/}"
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using existing tag: $VERSION"
-                  # Для dev ветки или других случаев - используем хэш коммита
+
                   else
                     SHORT_SHA=$(git rev-parse --short HEAD)
                     echo "VERSION=$SHORT_SHA" >> $GITHUB_OUTPUT
