@@ -16,6 +16,8 @@ retort = Retort()
 
 @dataclass(slots=True, frozen=True)
 class APIResponse[T]:
+    """Response from API."""
+
     content: T | None
     http_response: ClientResponse
     status: int
@@ -49,9 +51,11 @@ class AuthContext:
         self._auth_user_id = auth_user_id
 
     def __enter__(self) -> None:
+        """Set authentication header for the duration of the context."""
         self._api_client.add_header("X-Auth-User", self._auth_user_id)
 
     def __exit__(self, *exc_info: object) -> None:
+        """Remove authentication header after the context."""
         self._api_client.remove_header("X-Auth-User")
         if exc_info[0] is not None:  # exc type
             raise exc_info[1]  # type: ignore[misc] # exc value
