@@ -122,7 +122,7 @@ jobs:
 
                   if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
                     echo "TAG_SUFFIX=-stage" >> $GITHUB_OUTPUT
-                    echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}-stage" >> $GITHUB_OUTPUT
+                    echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}-dev" >> $GITHUB_OUTPUT
                   else
                     echo "TAG_SUFFIX=" >> $GITHUB_OUTPUT
                     echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
@@ -152,3 +152,33 @@ jobs:
                   tags: |
                       ghcr.io/${{ github.repository }}:${{ steps.tag.outputs.IMAGE_VERSION }}
                       ghcr.io/${{ github.repository }}:latest${{ steps.tag.outputs.TAG_SUFFIX }}
+
+            - name: Build and push grafana
+              uses: docker/build-push-action@v3.2.0
+              with:
+                  context: .
+                  file: ./docker/grafana.Dockerfile
+                  push: true
+                  tags: |
+                      ghcr.io/${{ github.repository }}-grafana:${{ steps.tag.outputs.IMAGE_VERSION }}
+                      ghcr.io/${{ github.repository }}-grafana:latest${{ steps.tag.outputs.TAG_SUFFIX }}
+
+            - name: Build and push vector
+              uses: docker/build-push-action@v3.2.0
+              with:
+                  context: .
+                  file: ./docker/vector.Dockerfile
+                  push: true
+                  tags: |
+                      ghcr.io/${{ github.repository }}-vector:${{ steps.tag.outputs.IMAGE_VERSION }}
+                      ghcr.io/${{ github.repository }}-vector:latest${{ steps.tag.outputs.TAG_SUFFIX }}
+
+            - name: Build and push loki
+              uses: docker/build-push-action@v3.2.0
+              with:
+                  context: .
+                  file: ./docker/loki.Dockerfile
+                  push: true
+                  tags: |
+                      ghcr.io/${{ github.repository }}-loki:${{ steps.tag.outputs.IMAGE_VERSION }}
+                      ghcr.io/${{ github.repository }}-loki:latest${{ steps.tag.outputs.TAG_SUFFIX }}

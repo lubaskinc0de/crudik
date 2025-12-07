@@ -41,6 +41,19 @@ services:
         volumes:
             - pg_data:/var/lib/postgresql/data/
 
+    vector:
+        extends:
+            file: docker-compose.base.yml
+            service: vector
+
+    loki:
+        extends:
+            file: docker-compose.base.yml
+            service: loki
+        volumes:
+            - loki_data:/loki
+
 volumes:
     pg_data:
     grafana_data:
+    loki_data:

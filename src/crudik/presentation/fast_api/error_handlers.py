@@ -54,7 +54,7 @@ async def get_app_error_response(
         meta=err.meta,
     ).model_dump(mode="json")
 
-    await logger.aexception("Handled error", error_response=error_response)
+    await logger.ainfo("Handled error", error_response=error_response, exc_info=err)
     return JSONResponse(
         status_code=http_status,
         content=error_response,
@@ -65,6 +65,6 @@ async def app_error_handler(_request: Request, exc: Exception) -> JSONResponse:
     """FastAPI exception handler that converts AppError exceptions to JSON error responses."""
     app_error = exc if isinstance(exc, AppError) else None
     if app_error is None:
-        await logger.acritical("Internal server error")
+        await logger.aexception("Handling unexpected internal server error", exc_info=exc)
         app_error = InternalServerError()
     return await get_app_error_response(app_error)

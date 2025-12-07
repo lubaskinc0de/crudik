@@ -55,7 +55,7 @@ def configure_structlog() -> dict[str, Any]:
                 "propagate": False,
             },
             "uvicorn.error": {
-                "level": "INFO",
+                "level": "CRITICAL",
                 "handlers": ["json"],
                 "propagate": False,
             },
