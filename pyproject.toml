@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lint = ['ruff==0.14.7', 'mypy==1.19.0']
+lint = ['ruff==0.14.8', 'mypy==1.19.0']
 test = ['pytest==9.0.1', 'pytest-asyncio==1.3.0']
 dev = ['crudik[test,lint]']
 ci = ['crudik[dev]']
@@ -27,10 +27,6 @@ ci = ['crudik[dev]']
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-filterwarnings = [
-    "ignore::UserWarning",
-    'ignore:function ham\(\) is deprecated:DeprecationWarning',
-]
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -68,26 +64,17 @@ ignore = [
     # Strange and obscure
     'D100',
     'D104',
-    'D101',
-    'D105',
-    'D102',
     'D401',
     'RET504',
-    'D103',
-    'PLR0913',
-    'S101',
-    'EM101',
-    'TRY003',
     'D107',
-    'ARG002',
-    'RUF001',
-    'PLR0912',
-    'C901',
-    'PGH003',
-    # Does not work correctly
     'S104',
     'ANN401',
+    # Does not work correctly
+    # Not applicable for now
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
 
 [[project.authors]]
 name = 'lubaskinc0de'

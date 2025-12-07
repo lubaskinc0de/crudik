@@ -8,7 +8,7 @@ up-db:
     docker compose -f docker/docker-compose.yml up db -d
 
 test:
-    docker compose -f docker/docker-compose.test.yml up --build --abort-on-container-exit tests
+    docker compose -f docker/docker-compose.tests.yml up --build --abort-on-container-exit tests
     just down
 
 test-unit:
@@ -16,7 +16,7 @@ test-unit:
 
 down:
     docker compose -f docker/docker-compose.yml down
-    docker compose -f docker/docker-compose.test.yml down
+    docker compose -f docker/docker-compose.tests.yml down
 
 clear:
     docker compose -f docker/docker-compose.yml down -v
