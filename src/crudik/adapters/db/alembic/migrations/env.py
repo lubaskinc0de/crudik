@@ -6,7 +6,6 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from crudik.adapters.config.loader import Config
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.db.models.base import mapper_registry
 
