@@ -20,7 +20,7 @@ class UserModel(BaseModel):
 
 @interactor
 class ReadUser:
-    """Use case interactor for reading user data."""
+    """Interactor for reading user data."""
 
     gateway: UserGateway
     idp: UserIdProvider
