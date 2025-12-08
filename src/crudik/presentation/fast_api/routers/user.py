@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.post("/")
-async def create_user(
+async def create(
     interactor: FromDishka[CreateUser],
 ) -> CreatedUser:
     """HTTP endpoint for creating a new user."""
@@ -22,7 +22,7 @@ async def create_user(
 
 
 @router.get("/{user_id}")
-async def read_user(
+async def read(
     interactor: FromDishka[ReadUser],
     user_id: UserId,
 ) -> UserModel:
