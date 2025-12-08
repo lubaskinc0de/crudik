@@ -1,28 +1,20 @@
 from collections.abc import AsyncIterator
 
-from bazario.asyncio import Dispatcher, Registry, Resolver
-from bazario.asyncio.resolvers.dishka import DishkaResolver
-from dishka import AnyOf, AsyncContainer, Provider, Scope, WithParents, provide, provide_all
+from dishka import AnyOf, Provider, Scope, WithParents, provide, provide_all
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
-from crudik.adapters.auth.event_handlers import UserCreatedHandler
+from crudik.adapters.auth.auth_provider import SimpleAuthProvider
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProvider
 from crudik.adapters.auth.idp.user import UserIdProviderImpl
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.db.gateway.auth_user import SAAuthUserGateway
 from crudik.adapters.db.gateway.user import SAUserGateway
-from crudik.application.common.event.user import UserCreated
 from crudik.application.common.uow import UoW
 
 
 class AdapterProvider(Provider):
     """Dishka provider that registers all adapter implementations."""
 
-    bazario_dispatcher = provide(WithParents[Dispatcher], scope=Scope.REQUEST)
-    event_handlers = provide_all(
-        UserCreatedHandler,
-        scope=Scope.REQUEST,
-    )
     id_providers = provide_all(
         WithParents[WebAuthUserIdProvider],
         WithParents[UserIdProviderImpl],
@@ -33,6 +25,7 @@ class AdapterProvider(Provider):
         WithParents[SAAuthUserGateway],
         scope=Scope.REQUEST,
     )
+    auth_provider = provide(WithParents[SimpleAuthProvider], scope=Scope.REQUEST)
 
     @provide(scope=Scope.APP)
     async def get_engine(self, config: DbConfig) -> AsyncIterator[AsyncEngine]:
@@ -65,15 +58,3 @@ class AdapterProvider(Provider):
         """Provides a request-scoped database session that also implements the UoW protocol."""
         async with session_factory() as session:
             yield session
-
-    @provide(scope=Scope.REQUEST)
-    async def get_bazario_resolver(self, request_container: AsyncContainer) -> Resolver:
-        """Provides Bazario event resolver that uses Dishka container for dependency injection."""
-        return DishkaResolver(request_container)
-
-    @provide(scope=Scope.APP)
-    async def get_bazario_registry(self) -> Registry:
-        """Provides Bazario event registry with all registered notification handlers."""
-        registry = Registry()
-        registry.add_notification_handlers(UserCreated, UserCreatedHandler)
-        return registry

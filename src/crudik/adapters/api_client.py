@@ -6,13 +6,18 @@ from adaptix.load_error import LoadError
 from aiohttp import ClientResponse, ClientResponseError, ClientSession
 
 from crudik.adapters.auth.model import AuthUserId
-from crudik.application.user.create import CreateUserOutput
-from crudik.application.user.read import ReadUserOutput
+from crudik.adapters.errors.http.response import ErrorResponse
+from crudik.application.user.create import CreatedUser
+from crudik.application.user.read import UserModel
 from crudik.entities.common.config import config
 from crudik.entities.common.identifiers import UserId
-from crudik.presentation.fast_api.error_handlers import ErrorResponse
 
 retort = Retort()
+
+
+@dataclass
+class EmptyResponse:
+    """Empty response."""
 
 
 @dataclass(slots=True, frozen=True)
@@ -63,7 +68,7 @@ class AuthContext:
 
     def __enter__(self) -> None:
         """Set authentication header for the duration of the context."""
-        self._api_client.add_header(self._config.auth_user_id_header, self._auth_user_id)
+        self._api_client.set_header(self._config.auth_user_id_header, self._auth_user_id)
 
     def __exit__(self, *exc_info: object) -> None:
         """Remove authentication header after the context."""
@@ -80,23 +85,7 @@ class APIClient:
         self._headers: dict[str, str] = {}
         self._config = config
 
-    def set_headers(self, headers: dict[str, str]) -> None:
-        """Set custom HTTP headers for requests."""
-        self._headers = headers
-
-    def add_header(self, header: str, value: str) -> None:
-        """Add HTTP header."""
-        self._headers[header] = value
-
-    def remove_header(self, header: str) -> None:
-        """Remove HTTP header."""
-        del self._headers[header]
-
-    def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
-        """Set auth user ID for requests."""
-        return AuthContext(self, auth_user_id, self._config)
-
-    async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
+    async def _load_response[T](self, response: ClientResponse, response_type: type[T] | None) -> APIResponse[T]:
         """Load response content or error from HTTP response."""
         try:
             response.raise_for_status()
@@ -117,20 +106,50 @@ class APIClient:
                 status=response.status,
             )
 
-    async def create_user(self) -> APIResponse[CreateUserOutput]:
+    def set_header(self, header: str, value: str) -> None:
+        """Add HTTP header."""
+        self._headers[header] = value
+
+    def remove_header(self, header: str) -> None:
+        """Remove HTTP header."""
+        del self._headers[header]
+
+    def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
+        """Set auth user ID for requests."""
+        return AuthContext(self, auth_user_id, self._config)
+
+    async def readiness(self) -> APIResponse[EmptyResponse]:
+        """GET /internal/ready."""
+        url = "/internal/ready"
+        async with self.session.get(url, headers=self._headers) as response:
+            return await self._load_response(
+                response,
+                response_type=EmptyResponse,
+            )
+
+    async def liveness(self) -> APIResponse[EmptyResponse]:
+        """GET /internal/alive."""
+        url = "/internal/alive"
+        async with self.session.get(url, headers=self._headers) as response:
+            return await self._load_response(
+                response,
+                response_type=EmptyResponse,
+            )
+
+    async def create_user(self) -> APIResponse[CreatedUser]:
         """Create a new user via POST /users/."""
         url = "/users/"
         async with self.session.post(url, headers=self._headers) as response:
             return await self._load_response(
                 response,
-                response_type=CreateUserOutput,
+                response_type=CreatedUser,
             )
 
-    async def read_user(self, user_id: UserId) -> APIResponse[ReadUserOutput]:
+    async def read_user(self, user_id: UserId) -> APIResponse[UserModel]:
         """Read user by id via GET /users/{user_id}."""
         url = f"/users/{user_id}"
         async with self.session.get(url, headers=self._headers) as response:
             return await self._load_response(
                 response,
-                response_type=ReadUserOutput,
+                response_type=UserModel,
             )

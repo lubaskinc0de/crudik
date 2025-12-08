@@ -6,7 +6,7 @@ RUN apt-get -qq update && \
     wget && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    apt install -y git curl && \
+    apt install -y curl && \
     rm -rf /var/lib/apt/lists/
 
 # setting working directory

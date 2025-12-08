@@ -1,6 +1,6 @@
 from typing import Self
 
-from crudik.adapters.config.base import env
+from crudik.adapters.env_loader import env
 from crudik.entities import config
 
 

@@ -1,10 +1,9 @@
 from uuid import uuid4
 
 import structlog
-from bazario.asyncio import Publisher
 from pydantic import BaseModel
 
-from crudik.application.common.event.user import UserCreated
+from crudik.application.common.auth_provider import AuthProvider
 from crudik.application.common.interactor import interactor
 from crudik.application.common.logger import Logger
 from crudik.application.common.uow import UoW
@@ -14,7 +13,7 @@ from crudik.entities.user import User
 logger: Logger = structlog.get_logger(__name__)
 
 
-class CreateUserOutput(BaseModel):
+class CreatedUser(BaseModel):
     """Response model containing the info about newly created user."""
 
     id: UserId
@@ -22,25 +21,24 @@ class CreateUserOutput(BaseModel):
 
 @interactor
 class CreateUser:
-    """Use case interactor for creating a new user entity, publishes the UserCreated event."""
+    """Interactor for creating a new user entity."""
 
-    publisher: Publisher
     uow: UoW
+    auth_provider: AuthProvider
 
-    async def execute(self) -> CreateUserOutput:
-        """Creates a new user with a generated ID, persists it, publishes UserCreated event, and returns the user ID."""
+    async def execute(self) -> CreatedUser:
+        """Creates a new user with a generated ID."""
+        logger.debug("Creating new user")
         user_id = uuid4()
-        await logger.adebug("Generated new user id", user_id=user_id)
+        logger.debug("Generated new user id", user_id=user_id)
         user = User(user_id)
 
         self.uow.add(user)
-
         await self.uow.flush([user])
-        await logger.adebug("Publishing user created event")
-        await self.publisher.publish(UserCreated(user_id))
+        await self.auth_provider.setup_auth(user)
         await self.uow.commit()
 
-        await logger.ainfo("User created", user=user)
-        return CreateUserOutput(
+        logger.info("User created", user=user)
+        return CreatedUser(
             id=user_id,
         )

@@ -25,6 +25,7 @@ lint:
     ruff format
     ruff check --fix
     mypy
+    lint-imports
 
 dev-environment:
     uv pip install -e ".[dev]"

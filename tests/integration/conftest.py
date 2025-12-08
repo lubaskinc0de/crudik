@@ -9,8 +9,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.api_client import APIClient, APIClientConfig
-from crudik.adapters.config.loader import Config
-from crudik.adapters.di.container import get_async_container
+from crudik.bootstrap.config.loader import Config
+from crudik.bootstrap.di.container import get_async_container
 
 
 @pytest.fixture

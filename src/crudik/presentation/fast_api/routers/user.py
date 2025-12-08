@@ -2,8 +2,8 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 
-from crudik.application.user.create import CreateUser, CreateUserOutput
-from crudik.application.user.read import ReadUser, ReadUserOutput
+from crudik.application.user.create import CreatedUser, CreateUser
+from crudik.application.user.read import ReadUser, UserModel
 from crudik.entities.common.identifiers import UserId
 
 router = APIRouter(
@@ -14,17 +14,17 @@ router = APIRouter(
 
 
 @router.post("/")
-async def create_user(
+async def create(
     interactor: FromDishka[CreateUser],
-) -> CreateUserOutput:
+) -> CreatedUser:
     """HTTP endpoint for creating a new user."""
     return await interactor.execute()
 
 
 @router.get("/{user_id}")
-async def read_user(
+async def read(
     interactor: FromDishka[ReadUser],
     user_id: UserId,
-) -> ReadUserOutput:
+) -> UserModel:
     """HTTP endpoint for retrieving user data by ID."""
     return await interactor.execute(user_id)

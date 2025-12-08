@@ -21,6 +21,9 @@ jobs:
             - name: Mypy
               run: mypy
 
+            - name: Import-linter
+              run: lint-imports
+
     test:
         name: "Run tests"
         runs-on: ubuntu-latest

@@ -4,7 +4,8 @@ services:
             file: docker-compose.base.yml
             service: nginx
         depends_on:
-            - api
+            api:
+                condition: service_healthy
 
     tests:
         restart: no
@@ -19,8 +20,7 @@ services:
         environment:
             - API_URL=http://nginx:80
         depends_on:
-            nginx:
-                condition: service_healthy
+            - nginx
 
     migrations:
         extends:

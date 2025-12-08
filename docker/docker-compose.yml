@@ -6,15 +6,15 @@ services:
         volumes:
             - grafana_data:/var/lib/grafana
         depends_on:
-            nginx:
-                condition: service_healthy
+            - nginx
 
     nginx:
         extends:
             file: docker-compose.base.yml
             service: nginx
         depends_on:
-            - api
+            api:
+                condition: service_healthy
 
     migrations:
         extends:

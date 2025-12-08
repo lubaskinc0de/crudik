@@ -5,8 +5,8 @@ import toml_rs
 from adaptix import Retort
 
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
-from crudik.adapters.config.base import env
 from crudik.adapters.db.config import DbConfig
+from crudik.adapters.env_loader import env
 from crudik.entities import config
 
 retort = Retort()

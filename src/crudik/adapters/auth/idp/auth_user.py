@@ -31,7 +31,7 @@ class WebAuthUserIdProvider(AuthUserIdProvider):
     async def get_auth_user_id(self) -> AuthUserId:
         """Reads the auth user ID from the configured HTTP header, raises UnauthorizedError if header is missing."""
         if (user_id := self.http_request.headers.get(self.config.user_id_header)) is None:
-            await logger.adebug("Request unauthorized due to missing header", header=self.config.user_id_header)
+            logger.debug("Request unauthorized due to missing header", header=self.config.user_id_header)
             msg = f"Missing {self.config.user_id_header} header"
             raise UnauthorizedError(
                 message=msg,
