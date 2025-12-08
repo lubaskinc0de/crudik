@@ -6,11 +6,11 @@ from adaptix.load_error import LoadError
 from aiohttp import ClientResponse, ClientResponseError, ClientSession
 
 from crudik.adapters.auth.model import AuthUserId
+from crudik.adapters.errors.http.response import ErrorResponse
 from crudik.application.user.create import CreateUserOutput
 from crudik.application.user.read import ReadUserOutput
 from crudik.entities.common.config import config
 from crudik.entities.common.identifiers import UserId
-from crudik.presentation.fast_api.error_handlers import ErrorResponse
 
 retort = Retort()
 

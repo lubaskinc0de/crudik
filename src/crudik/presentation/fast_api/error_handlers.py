@@ -1,33 +1,15 @@
-from typing import Any, ClassVar
-
 import structlog
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 from crudik.adapters.auth.errors.auth_user import AuthUserAlreadyExistsError
 from crudik.adapters.auth.errors.base import UnauthorizedError
+from crudik.adapters.errors.http.response import ErrorResponse, InternalServerError
 from crudik.application.common.logger import Logger
 from crudik.application.errors.user import UserNotFoundError
-from crudik.entities.errors.base import AccessDeniedError, AppError, app_error
+from crudik.entities.errors.base import AccessDeniedError, AppError
 
 logger: Logger = structlog.get_logger(__name__)
-
-
-@app_error
-class InternalServerError(AppError):
-    """Generic error used as fallback when an unexpected exception occurs."""
-
-    code: ClassVar[str] = "INTERNAL_SERVER_ERROR"
-    message: str = "Internal Server Error"
-
-
-class ErrorResponse(BaseModel):
-    """Standard error response model returned to API clients."""
-
-    code: str
-    message: str
-    meta: dict[str, Any] | None
 
 
 error_to_http_status: dict[type[AppError], int] = {
