@@ -12,7 +12,7 @@ from crudik.entities.errors.base import AccessDeniedError
 logger: Logger = structlog.get_logger(__name__)
 
 
-class ReadUserOutput(BaseModel):
+class UserModel(BaseModel):
     """Response model containing user data retrieved from the system."""
 
     id: UserId
@@ -25,7 +25,7 @@ class ReadUser:
     gateway: UserGateway
     idp: UserIdProvider
 
-    async def execute(self, user_id: UserId) -> ReadUserOutput:
+    async def execute(self, user_id: UserId) -> UserModel:
         """Retrieves user data by ID, verifies the user exists, and ensures the requester has access to the data."""
         logger.debug("Read user request", user_id=user_id)
         current_user = await self.idp.get_user()
@@ -40,6 +40,6 @@ class ReadUser:
             raise AccessDeniedError
 
         logger.info("Read user successfull", user_id=user_id)
-        return ReadUserOutput(
+        return UserModel(
             id=user.id,
         )

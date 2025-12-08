@@ -14,7 +14,6 @@ dependencies = [
     "alembic==1.17.2",
     "aiohttp==3.13.2",
     "adaptix==3.0.0b11",
-    "bazario==0.4.2",
     "toml-rs==0.1.0",
     "structlog==25.5.0",
 ]

@@ -7,8 +7,8 @@ from aiohttp import ClientResponse, ClientResponseError, ClientSession
 
 from crudik.adapters.auth.model import AuthUserId
 from crudik.adapters.errors.http.response import ErrorResponse
-from crudik.application.user.create import CreateUserOutput
-from crudik.application.user.read import ReadUserOutput
+from crudik.application.user.create import CreatedUser
+from crudik.application.user.read import UserModel
 from crudik.entities.common.config import config
 from crudik.entities.common.identifiers import UserId
 
@@ -117,20 +117,20 @@ class APIClient:
                 status=response.status,
             )
 
-    async def create_user(self) -> APIResponse[CreateUserOutput]:
+    async def create_user(self) -> APIResponse[CreatedUser]:
         """Create a new user via POST /users/."""
         url = "/users/"
         async with self.session.post(url, headers=self._headers) as response:
             return await self._load_response(
                 response,
-                response_type=CreateUserOutput,
+                response_type=CreatedUser,
             )
 
-    async def read_user(self, user_id: UserId) -> APIResponse[ReadUserOutput]:
+    async def read_user(self, user_id: UserId) -> APIResponse[UserModel]:
         """Read user by id via GET /users/{user_id}."""
         url = f"/users/{user_id}"
         async with self.session.get(url, headers=self._headers) as response:
             return await self._load_response(
                 response,
-                response_type=ReadUserOutput,
+                response_type=UserModel,
             )
