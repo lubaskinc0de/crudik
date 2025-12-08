@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 from crudik.adapters.config.loader import Config
 from crudik.adapters.di.container import get_async_container
-from crudik.adapters.logs import configure_structlog
+from crudik.bootstrap.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
 
 log_config = configure_structlog()
