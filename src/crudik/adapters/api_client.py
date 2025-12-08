@@ -15,6 +15,11 @@ from crudik.entities.common.identifiers import UserId
 retort = Retort()
 
 
+@dataclass
+class EmptyResponse:
+    """Empty response."""
+
+
 @dataclass(slots=True, frozen=True)
 class APIResponse[T]:
     """Response from API."""
@@ -63,7 +68,7 @@ class AuthContext:
 
     def __enter__(self) -> None:
         """Set authentication header for the duration of the context."""
-        self._api_client.add_header(self._config.auth_user_id_header, self._auth_user_id)
+        self._api_client.set_header(self._config.auth_user_id_header, self._auth_user_id)
 
     def __exit__(self, *exc_info: object) -> None:
         """Remove authentication header after the context."""
@@ -80,23 +85,7 @@ class APIClient:
         self._headers: dict[str, str] = {}
         self._config = config
 
-    def set_headers(self, headers: dict[str, str]) -> None:
-        """Set custom HTTP headers for requests."""
-        self._headers = headers
-
-    def add_header(self, header: str, value: str) -> None:
-        """Add HTTP header."""
-        self._headers[header] = value
-
-    def remove_header(self, header: str) -> None:
-        """Remove HTTP header."""
-        del self._headers[header]
-
-    def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
-        """Set auth user ID for requests."""
-        return AuthContext(self, auth_user_id, self._config)
-
-    async def _load_response[T](self, response: ClientResponse, response_type: type[T]) -> APIResponse[T]:
+    async def _load_response[T](self, response: ClientResponse, response_type: type[T] | None) -> APIResponse[T]:
         """Load response content or error from HTTP response."""
         try:
             response.raise_for_status()
@@ -115,6 +104,36 @@ class APIClient:
                 content=retort.load(await response.json(), response_type),
                 http_response=response,
                 status=response.status,
+            )
+
+    def set_header(self, header: str, value: str) -> None:
+        """Add HTTP header."""
+        self._headers[header] = value
+
+    def remove_header(self, header: str) -> None:
+        """Remove HTTP header."""
+        del self._headers[header]
+
+    def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
+        """Set auth user ID for requests."""
+        return AuthContext(self, auth_user_id, self._config)
+
+    async def readiness(self) -> APIResponse[EmptyResponse]:
+        """GET /internal/ready."""
+        url = "/internal/ready"
+        async with self.session.get(url, headers=self._headers) as response:
+            return await self._load_response(
+                response,
+                response_type=EmptyResponse,
+            )
+
+    async def liveness(self) -> APIResponse[EmptyResponse]:
+        """GET /internal/alive."""
+        url = "/internal/alive"
+        async with self.session.get(url, headers=self._headers) as response:
+            return await self._load_response(
+                response,
+                response_type=EmptyResponse,
             )
 
     async def create_user(self) -> APIResponse[CreatedUser]:
