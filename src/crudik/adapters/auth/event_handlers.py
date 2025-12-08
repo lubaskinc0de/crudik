@@ -37,17 +37,17 @@ class UserCreatedHandler(NotificationHandler[UserCreated]):
     @override
     async def handle(self, notification: UserCreated) -> None:
         """Handles UserCreated event by linking the new user with the current authentication user ID."""
-        await logger.adebug("Handling user created event")
+        logger.debug("Handling user created event")
 
         auth_user_id = await self._idp.get_auth_user_id()
-        await logger.adebug("Auth user id", auth_user_id=auth_user_id)
+        logger.debug("Auth user id", auth_user_id=auth_user_id)
         if await self._auth_user_gateway.is_exists(auth_user_id):
-            await logger.ainfo("Auth user already exists", auth_user_id=auth_user_id)
+            logger.info("Auth user already exists", auth_user_id=auth_user_id)
             raise AuthUserAlreadyExistsError(auth_user_id=auth_user_id)
 
         if (user := await self._user_gateway.get(notification.user_id)) is None:
             # unreachable
-            await logger.awarning("Invalid user id in notification", notification=notification)
+            logger.warning("Invalid user id in notification", notification=notification)
             raise UserNotFoundError(user_id=notification.user_id)
 
         auth_user = AuthUser(
@@ -57,4 +57,4 @@ class UserCreatedHandler(NotificationHandler[UserCreated]):
         )
         self._uow.add(auth_user)
 
-        await logger.ainfo("Successfully created AuthUser entry", auth_user_id=auth_user_id, user_id=user.id)
+        logger.info("Successfully created AuthUser entry", auth_user_id=auth_user_id, user_id=user.id)

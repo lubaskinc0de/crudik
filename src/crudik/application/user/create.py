@@ -30,17 +30,17 @@ class CreateUser:
     async def execute(self) -> CreateUserOutput:
         """Creates a new user with a generated ID, persists it, publishes UserCreated event, and returns the user ID."""
         user_id = uuid4()
-        await logger.adebug("Generated new user id", user_id=user_id)
+        logger.debug("Generated new user id", user_id=user_id)
         user = User(user_id)
 
         self.uow.add(user)
 
         await self.uow.flush([user])
-        await logger.adebug("Publishing user created event")
+        logger.debug("Publishing user created event")
         await self.publisher.publish(UserCreated(user_id))
         await self.uow.commit()
 
-        await logger.ainfo("User created", user=user)
+        logger.info("User created", user=user)
         return CreateUserOutput(
             id=user_id,
         )
