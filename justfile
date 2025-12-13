@@ -30,9 +30,11 @@ lint:
 dev-environment:
     uv pip install -e ".[dev]"
 
-
 generate-migration NAME:
     just up-db
     sleep 1s
     set -a && source ./.config/.env.migrations.local && set +a && crudik migrations autogenerate "{{NAME}}"
     just down
+
+cookie-secret:
+    echo "OAUTH2_PROXY_COOKIE_SECRET=$(openssl rand -base64 32)"

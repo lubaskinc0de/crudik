@@ -1,12 +1,4 @@
 services:
-    nginx:
-        extends:
-            file: docker-compose.base.yml
-            service: nginx
-        depends_on:
-            api:
-                condition: service_healthy
-
     tests:
         restart: no
         build:
@@ -18,9 +10,9 @@ services:
             - "../.config/config.toml:/etc/crudik/config.toml"
         container_name: tests
         environment:
-            - API_URL=http://nginx:80
+            - API_URL=http://api:5000
         depends_on:
-            - nginx
+            - api
 
     migrations:
         extends:
