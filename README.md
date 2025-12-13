@@ -342,3 +342,16 @@ The pipeline consists of four main jobs that run in sequence:
 ### Docker Registry
 
 All images are published to [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (ghcr.io)
+
+## AI Usage
+
+The AI in this project was only used to cover the code with docstrings, as well as to write some parts of README (under my strict control)
+
+## Author
+**lubaskinc0de**
+
+## License
+**MIT**
+
+## Contributions
+Contributions are welcome
