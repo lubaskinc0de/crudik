@@ -30,13 +30,12 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
         openapi_url="/openapi.json",
     )
+    app.middleware("http")(tracing_middleware)
     container = get_async_container(Config.load())
-
     setup_dishka(container=container, app=app)
 
     include_routers(app)
     include_exception_handlers(app)
-    app.middleware("http")(tracing_middleware)
 
     return app
 

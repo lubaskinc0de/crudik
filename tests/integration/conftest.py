@@ -1,5 +1,6 @@
 import os
 from collections.abc import AsyncIterable, AsyncIterator
+from uuid import uuid4
 
 import aiohttp
 import pytest
@@ -9,6 +10,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from crudik.adapters.api_client import APIClient, APIClientConfig
+from crudik.adapters.tracing import TraceId
 from crudik.bootstrap.config.loader import Config
 from crudik.bootstrap.di.container import get_async_container
 
@@ -17,6 +19,12 @@ from crudik.bootstrap.di.container import get_async_container
 async def app_config() -> Config:
     """Load and provide app config."""
     return Config.load()
+
+
+@pytest.fixture
+async def trace_id() -> TraceId:
+    """Generate trace id."""
+    return uuid4().hex
 
 
 @pytest.fixture
@@ -75,11 +83,13 @@ def base_url() -> str:
 
 
 @pytest.fixture
-def api_client(http_session: ClientSession, app_config: Config) -> APIClient:
+def api_client(http_session: ClientSession, app_config: Config, trace_id: TraceId) -> APIClient:
     """Create and provide API client for tests."""
     return APIClient(
         session=http_session,
         config=APIClientConfig(
             auth_user_id_header=app_config.web_auth_user_id_provider.user_id_header,
         ),
+        trace_id=trace_id,
+        tracing_config=app_config.tracing,
     )

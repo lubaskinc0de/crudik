@@ -29,7 +29,12 @@ async def get_app_error_response(
     try:
         http_status = error_to_http_status[type(err)]
     except KeyError:
-        logger.critical("AppError is missing status code mapping", error_type=err.__class__.__qualname__)
+        logger.critical(
+            "AppError is missing status code mapping",
+            error_type=err.__class__.__qualname__
+            if not isinstance(err, InternalServerError)
+            else err.orig_error.__class__.__qualname__,
+        )
         http_status = 500
 
     error_response = ErrorResponse(
@@ -50,5 +55,5 @@ async def app_error_handler(_request: Request, exc: Exception) -> JSONResponse:
     app_error = exc if isinstance(exc, AppError) else None
     if app_error is None:
         logger.exception("Handling unexpected internal server error", exc_info=exc)
-        app_error = InternalServerError()
+        app_error = InternalServerError(orig_error=exc)
     return await get_app_error_response(app_error)

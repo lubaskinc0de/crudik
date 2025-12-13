@@ -3,6 +3,7 @@ from dishka.integrations.fastapi import FastapiProvider
 
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.db.config import DbConfig
+from crudik.adapters.tracing import TracingConfig
 from crudik.bootstrap.config.loader import Config
 from crudik.bootstrap.di.providers.adapter import AdapterProvider
 from crudik.bootstrap.di.providers.config import ConfigProvider
@@ -23,6 +24,7 @@ def get_async_container(config: Config) -> AsyncContainer:
         Config: config,
         DbConfig: config.db,
         WebAuthUserIdProviderConfig: config.web_auth_user_id_provider,
+        TracingConfig: config.tracing,
     }
     container = make_async_container(*providers, context=context, validation_settings=STRICT_VALIDATION)
     return container

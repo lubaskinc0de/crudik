@@ -27,6 +27,7 @@ class Config:
 
     db: DbConfig
     web_auth_user_id_provider: WebAuthUserIdProviderConfig
+    tracing: TracingConfig
 
     @classmethod
     def load(cls) -> Self:
@@ -40,4 +41,5 @@ class Config:
         return cls(
             db=db,
             web_auth_user_id_provider=toml_config.auth,
+            tracing=toml_config.tracing,
         )
