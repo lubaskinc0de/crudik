@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from crudik.adapters.auth.errors.auth_user import AuthUserAlreadyExistsError
 from crudik.adapters.auth.errors.base import UnauthorizedError
 from crudik.adapters.errors.http.response import ErrorResponse, InternalServerError
+from crudik.adapters.tracing import MissingTraceIdError
 from crudik.application.common.logger import Logger
 from crudik.application.errors.user import UserNotFoundError
 from crudik.entities.errors.base import AccessDeniedError, AppError
@@ -17,6 +18,7 @@ error_to_http_status: dict[type[AppError], int] = {
     AuthUserAlreadyExistsError: 409,
     UserNotFoundError: 404,
     AccessDeniedError: 403,
+    MissingTraceIdError: 422,
 }
 
 

@@ -9,6 +9,7 @@ from crudik.bootstrap.config.loader import Config
 from crudik.bootstrap.di.container import get_async_container
 from crudik.bootstrap.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
+from crudik.presentation.fast_api.tracing import tracing_middleware
 
 log_config = configure_structlog()
 
@@ -35,6 +36,7 @@ def create_app() -> FastAPI:
 
     include_routers(app)
     include_exception_handlers(app)
+    app.middleware("http")(tracing_middleware)
 
     return app
 

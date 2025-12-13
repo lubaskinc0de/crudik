@@ -7,6 +7,7 @@ from crudik.bootstrap.config.loader import Config
 from crudik.bootstrap.di.providers.adapter import AdapterProvider
 from crudik.bootstrap.di.providers.config import ConfigProvider
 from crudik.bootstrap.di.providers.interactor import InteractorProvider
+from crudik.bootstrap.di.providers.tracing import HTTPTracingProvider
 
 
 def get_async_container(config: Config) -> AsyncContainer:
@@ -16,6 +17,7 @@ def get_async_container(config: Config) -> AsyncContainer:
         FastapiProvider(),
         AdapterProvider(),
         InteractorProvider(),
+        HTTPTracingProvider(),
     ]
     context = {
         Config: config,
