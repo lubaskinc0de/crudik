@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from crudik.adapters.auth.auth_provider import SimpleAuthProvider
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProvider
-from crudik.adapters.auth.idp.user import UserIdProviderImpl
+from crudik.adapters.auth.idp.user import IdProviderImpl
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.db.gateway.auth_user import SAAuthUserGateway
 from crudik.adapters.db.gateway.user import SAUserGateway
@@ -17,7 +17,7 @@ class AdapterProvider(Provider):
 
     id_providers = provide_all(
         WithParents[WebAuthUserIdProvider],
-        WithParents[UserIdProviderImpl],
+        WithParents[IdProviderImpl],
         scope=Scope.REQUEST,
     )
     gateways = provide_all(

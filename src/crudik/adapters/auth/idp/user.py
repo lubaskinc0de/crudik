@@ -6,7 +6,7 @@ from crudik.adapters.auth.common.gateway.auth_user import AuthUserGateway
 from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
 from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.base import adapter
-from crudik.application.common.idp import UserIdProvider
+from crudik.application.common.idp import IdProvider
 from crudik.application.common.logger import Logger
 from crudik.entities.user import User
 
@@ -14,7 +14,7 @@ logger: Logger = structlog.get_logger(__name__)
 
 
 @adapter
-class UserIdProviderImpl(UserIdProvider):
+class IdProviderImpl(IdProvider):
     """Adapter implementation that resolves application User entity from authentication user ID."""
 
     auth_user_idp: AuthUserIdProvider
