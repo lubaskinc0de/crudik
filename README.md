@@ -1,5 +1,8 @@
 # Crudik (stands for "cute CRUD" in Russian)
 
+[![License](https://img.shields.io/github/license/lubaskinc0de/crudik)](https://github.com/lubaskinc0de/crudik/blob/master/LICENSE)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lubaskinc0de/crudik/lint_test_deploy.yml)](https://github.com/lubaskinc0de/crudik/actions)
+
 A universal application **template** that follows the principles of a clean architecture and contains everything you need to get started quickly.
 
 ## Motivation
