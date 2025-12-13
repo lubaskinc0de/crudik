@@ -30,6 +30,6 @@ async def ready(
         await session.execute(text("SELECT 1"))
     except Exception as e:  # noqa: BLE001
         await logger.awarning("Database is not ready", exc_info=e)
-        return JSONResponse(status_code=429, content={})
+        return JSONResponse(status_code=503, content={})
 
     return JSONResponse(status_code=200, content={})

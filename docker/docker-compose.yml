@@ -15,6 +15,32 @@ services:
         depends_on:
             api:
                 condition: service_healthy
+            oauth2-proxy:
+                condition: service_healthy
+
+    keycloak:
+        extends:
+            file: docker-compose.base.yml
+            service: keycloak
+        volumes:
+            - kc_data:/opt/keycloak/data/
+
+    oauth2-proxy:
+        extends:
+            file: docker-compose.base.yml
+            service: oauth2-proxy
+        depends_on:
+            keycloak:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+
+    redis:
+        extends:
+            file: docker-compose.base.yml
+            service: redis
+        volumes:
+            - redis_data:/data
 
     migrations:
         extends:
@@ -57,3 +83,5 @@ volumes:
     pg_data:
     grafana_data:
     loki_data:
+    kc_data:
+    redis_data:
