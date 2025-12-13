@@ -7,6 +7,7 @@ from adaptix import Retort
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.env_loader import env
+from crudik.adapters.tracing import TracingConfig
 from crudik.entities import config
 
 retort = Retort()
@@ -17,6 +18,7 @@ class TomlConfig:
     """Configuration structure loaded from TOML file matching the file's schema."""
 
     auth: WebAuthUserIdProviderConfig
+    tracing: TracingConfig
 
 
 @config
@@ -25,6 +27,7 @@ class Config:
 
     db: DbConfig
     web_auth_user_id_provider: WebAuthUserIdProviderConfig
+    tracing: TracingConfig
 
     @classmethod
     def load(cls) -> Self:
@@ -38,4 +41,5 @@ class Config:
         return cls(
             db=db,
             web_auth_user_id_provider=toml_config.auth,
+            tracing=toml_config.tracing,
         )

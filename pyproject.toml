@@ -69,6 +69,7 @@ ignore = [
     'D107',
     'S104',
     'ANN401',
+    'TC002',
     # Does not work correctly
     # Not applicable for now
 ]

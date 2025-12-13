@@ -9,6 +9,7 @@ from crudik.bootstrap.config.loader import Config
 from crudik.bootstrap.di.container import get_async_container
 from crudik.bootstrap.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
+from crudik.presentation.fast_api.tracing import tracing_middleware
 
 log_config = configure_structlog()
 
@@ -29,8 +30,8 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
         openapi_url="/openapi.json",
     )
+    app.middleware("http")(tracing_middleware)
     container = get_async_container(Config.load())
-
     setup_dishka(container=container, app=app)
 
     include_routers(app)
