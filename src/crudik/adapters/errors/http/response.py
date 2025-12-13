@@ -19,3 +19,4 @@ class InternalServerError(AppError):
 
     code: ClassVar[str] = "INTERNAL_SERVER_ERROR"
     message: str = "Internal Server Error"
+    orig_error: Exception

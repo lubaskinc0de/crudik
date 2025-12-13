@@ -1,2 +1,6 @@
 [auth]
 user_id_header = "X-Auth-User"
+
+[tracing]
+trace_id_header = "X-Trace-Id"
+trace_id_required = false

@@ -4,7 +4,7 @@ from typing import Protocol
 from crudik.entities.user import User
 
 
-class UserIdProvider(Protocol):
+class IdProvider(Protocol):
     """Protocol for retrieving the currently authenticated user from the context."""
 
     @abstractmethod

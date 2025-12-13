@@ -7,6 +7,7 @@ from aiohttp import ClientResponse, ClientResponseError, ClientSession
 
 from crudik.adapters.auth.model import AuthUserId
 from crudik.adapters.errors.http.response import ErrorResponse
+from crudik.adapters.tracing import TraceId, TracingConfig
 from crudik.application.user.create import CreatedUser
 from crudik.application.user.read import UserModel
 from crudik.entities.common.config import config
@@ -80,9 +81,18 @@ class AuthContext:
 class APIClient:
     """Client for making API requests."""
 
-    def __init__(self, session: ClientSession, config: APIClientConfig) -> None:
+    def __init__(
+        self,
+        session: ClientSession,
+        config: APIClientConfig,
+        trace_id: TraceId,
+        tracing_config: TracingConfig,
+    ) -> None:
         self.session = session
-        self._headers: dict[str, str] = {}
+        self.trace_id = trace_id
+        self._headers: dict[str, str] = {
+            tracing_config.trace_id_header: self.trace_id,
+        }
         self._config = config
 
     async def _load_response[T](self, response: ClientResponse, response_type: type[T] | None) -> APIResponse[T]:
