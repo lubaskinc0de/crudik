@@ -6,14 +6,22 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
                   python-version: "3.13.7"
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v7
+              with:
+                  version: "0.9.17"
+
             - name: Install dependencies
               run: |
-                  python -m pip install uv==0.9.15
-                  uv pip install -e ".[ci]" --system
+                  uv pip install ".[ci]" --system
 
             - name: Ruff
               run: ruff check
@@ -30,6 +38,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
 
             - name: Set up Docker Compose
               run: |
@@ -51,6 +61,7 @@ jobs:
               with:
                   ref: ${{ github.event.pull_request.merge_commit_sha }}
                   fetch-depth: "0"
+                  persist-credentials: false
 
             - name: Bump version and push tag
               id: bump_version
@@ -63,7 +74,9 @@ jobs:
 
             - name: Create version file
               run: |
-                  echo "${{ steps.bump_version.outputs.new_tag }}" > VERSION.txt
+                  echo "${STEPS_BUMP_VERSION_OUTPUTS_NEW_TAG}" > VERSION.txt
+              env:
+                  STEPS_BUMP_VERSION_OUTPUTS_NEW_TAG: ${{ steps.bump_version.outputs.new_tag }}
 
             - name: Upload version file
               uses: actions/upload-artifact@v4
@@ -74,8 +87,11 @@ jobs:
 
             - name: Output version info
               run: |
-                  echo "New version: ${{ steps.bump_version.outputs.new_tag }}"
-                  echo "Previous version: ${{ steps.bump_version.outputs.previous_tag }}"
+                  echo "New version: ${STEPS_BUMP_VERSION_OUTPUTS_NEW_TAG}"
+                  echo "Previous version: ${STEPS_BUMP_VERSION_OUTPUTS_PREVIOUS_TAG}"
+              env:
+                  STEPS_BUMP_VERSION_OUTPUTS_NEW_TAG: ${{ steps.bump_version.outputs.new_tag }}
+                  STEPS_BUMP_VERSION_OUTPUTS_PREVIOUS_TAG: ${{ steps.bump_version.outputs.previous_tag }}
 
     build_and_push:
         name: "Build and push"
@@ -90,6 +106,7 @@ jobs:
               uses: actions/checkout@v4
               with:
                   fetch-depth: "0"
+                  persist-credentials: false
 
             - name: Download version file if exists
               uses: actions/download-artifact@v4
@@ -106,7 +123,7 @@ jobs:
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using bumped version: $VERSION"
 
-                  elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+                  elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
                     VERSION="${GITHUB_REF#refs/tags/}"
                     echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
                     echo "Using existing tag: $VERSION"
@@ -120,21 +137,26 @@ jobs:
             - name: Determine image tag suffix and version
               id: tag
               run: |
-                  echo "Github ref: ${{ github.ref }}"
-                  echo "Version: ${{ steps.get_version.outputs.VERSION }}"
+                  echo "Github ref: ${GITHUB_REF}"
+                  echo "Version: ${STEPS_GET_VERSION_OUTPUTS_VERSION}"
 
-                  if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+                  if [ "${GITHUB_REF}" == "refs/heads/dev" ]; then
                     echo "TAG_SUFFIX=-dev" >> $GITHUB_OUTPUT
-                    echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}-dev" >> $GITHUB_OUTPUT
+                    echo "IMAGE_VERSION=${STEPS_GET_VERSION_OUTPUTS_VERSION}-dev" >> $GITHUB_OUTPUT
                   else
                     echo "TAG_SUFFIX=" >> $GITHUB_OUTPUT
-                    echo "IMAGE_VERSION=${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+                    echo "IMAGE_VERSION=${STEPS_GET_VERSION_OUTPUTS_VERSION}" >> $GITHUB_OUTPUT
                   fi
+              env:
+                  STEPS_GET_VERSION_OUTPUTS_VERSION: ${{ steps.get_version.outputs.VERSION }}
 
             - name: Release info
               run: |
-                  echo "Tag suffix: ${{ steps.tag.outputs.TAG_SUFFIX }}"
-                  echo "Image version: ${{ steps.tag.outputs.IMAGE_VERSION }}"
+                  echo "Tag suffix: ${STEPS_TAG_OUTPUTS_TAG_SUFFIX}"
+                  echo "Image version: ${STEPS_TAG_OUTPUTS_IMAGE_VERSION}"
+              env:
+                  STEPS_TAG_OUTPUTS_TAG_SUFFIX: ${{ steps.tag.outputs.TAG_SUFFIX }}
+                  STEPS_TAG_OUTPUTS_IMAGE_VERSION: ${{ steps.tag.outputs.IMAGE_VERSION }}
 
             - name: Docker Setup Buildx
               uses: docker/setup-buildx-action@v2.2.1

@@ -1,4 +1,4 @@
-from sqlalchemy import UUID, Column, ForeignKey, Table, Text, UniqueConstraint
+from sqlalchemy import UUID, Column, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 
 from crudik.adapters.auth.model import AuthUser
@@ -9,7 +9,6 @@ auth_user_table = Table(
     mapper_registry.metadata,
     Column("auth_user_id", Text, primary_key=True),
     Column("user_id", UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-    UniqueConstraint("user_id", "auth_user_id", name="uq_auth_user"),
 )
 
 
