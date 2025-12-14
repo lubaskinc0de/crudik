@@ -5,8 +5,6 @@ services:
             service: grafana
         volumes:
             - grafana_data:/var/lib/grafana
-        depends_on:
-            - nginx
 
     nginx:
         extends:
