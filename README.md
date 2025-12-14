@@ -335,6 +335,7 @@ The pipeline consists of four main jobs that run in sequence:
     -   Grafana image (`ghcr.io/<repo>-grafana/<version>`)
     -   Vector image (`ghcr.io/<repo>-vector/<version>`)
     -   Loki image (`ghcr.io/<repo>-loki/<version>`)
+    -   OAuth2-proxy image (`ghcr.io/<repo>-oauth2-proxy/<version>`)
 
 ### Workflow Conditions
 

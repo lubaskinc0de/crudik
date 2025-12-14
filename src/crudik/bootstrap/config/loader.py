@@ -9,6 +9,7 @@ from crudik.adapters.db.config import DbConfig
 from crudik.adapters.env_loader import env
 from crudik.adapters.tracing import TracingConfig
 from crudik.entities import config
+from crudik.presentation.fast_api.config import ServerConfig
 
 retort = Retort()
 
@@ -28,6 +29,7 @@ class Config:
     db: DbConfig
     web_auth_user_id_provider: WebAuthUserIdProviderConfig
     tracing: TracingConfig
+    server: ServerConfig
 
     @classmethod
     def load(cls) -> Self:
@@ -38,8 +40,13 @@ class Config:
             toml_config = retort.load(toml_rs.load(f), TomlConfig)
 
         db = DbConfig.from_env()
+        server = ServerConfig(
+            server_port=env("SERVER_PORT", int),
+            server_host=env("SERVER_HOST"),
+        )
         return cls(
             db=db,
             web_auth_user_id_provider=toml_config.auth,
             tracing=toml_config.tracing,
+            server=server,
         )

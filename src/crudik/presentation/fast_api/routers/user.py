@@ -2,8 +2,8 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import DishkaRoute
 from fastapi import APIRouter
 
-from crudik.application.user.create import CreatedUser, CreateUser
-from crudik.application.user.read import ReadUser, UserModel
+from crudik.application.create_user import CreatedUser, CreateUser
+from crudik.application.read_user import ReadUser, UserModel
 from crudik.entities.common.identifiers import UserId
 
 router = APIRouter(

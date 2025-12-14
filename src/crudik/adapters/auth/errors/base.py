@@ -7,8 +7,11 @@ from crudik.entities.errors.base import AppError, app_error
 class UnauthorizedReason(Enum):
     """Enumeration of reasons why an authentication request may be unauthorized."""
 
-    MISSING_HEADER = "MISSING_HEADER"
+    MISSING_USER_ID = "MISSING_USER_ID"
     INVALID_AUTH_USER_ID = "INVALID_AUTH_USER_ID"
+    MISSING_ACCESS_TOKEN = "MISSING_ACCESS_TOKEN"  # noqa: S105
+    CORRUPTED_ACCESS_TOKEN = "CORRUPTED_ACCESS_TOKEN"  # noqa: S105
+    EMAIL_IS_NOT_VERIFIED = "EMAIL_IS_NOT_VERIFIED"
 
 
 @app_error

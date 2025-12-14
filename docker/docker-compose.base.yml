@@ -35,20 +35,9 @@ services:
 
     oauth2-proxy:
         container_name: oauth2-proxy
-        image: quay.io/oauth2-proxy/oauth2-proxy:v7.11.0-alpine
-        command:
-            - --upstream=http://nginx:80
-            - --reverse-proxy=true
-            - --cookie-httponly=true
-            - --request-logging=true
-            - --auth-logging=true
-            - --standard-logging=true
-            - --session-store-type=redis
-            - --redis-connection-url=redis://redis:6379/2
-            - --skip-provider-button
-            - --set-xauthrequest=true
-        entrypoint:
-            - oauth2-proxy
+        build:
+            context: ../
+            dockerfile: docker/oauth2-proxy.Dockerfile
         env_file:
             - ../.config/.env.oauthproxy
         ports:

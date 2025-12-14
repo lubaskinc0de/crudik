@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await app.state.dishka_container.close()
 
 
-def create_app() -> FastAPI:
+def create_app(config: Config) -> FastAPI:
     """Creates and configures the FastAPI application instance with routers, error handlers, and DI container."""
     app = FastAPI(
         lifespan=lifespan,
@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json",
     )
     app.middleware("http")(tracing_middleware)
-    container = get_async_container(Config.load())
+    container = get_async_container(config)
     setup_dishka(container=container, app=app)
 
     include_routers(app)
@@ -42,11 +42,11 @@ def create_app() -> FastAPI:
 
 def run_api() -> None:
     """Starts the FastAPI application server using uvicorn on the configured host and port."""
-    bind = "0.0.0.0"
+    config = Config.load()
     uvicorn.run(
-        create_app(),
-        port=5000,
-        host=bind,
+        create_app(config),
+        port=config.server.server_port,
+        host=config.server.server_host,
         log_config=log_config,
     )
 

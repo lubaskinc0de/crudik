@@ -1,25 +1,25 @@
 up:
-    docker compose -f docker/docker-compose.yml up --build
+    docker compose -f docker/docker-compose.yml --env-file=./.config/.env up --build
 
 up-silent:
-    docker compose -f docker/docker-compose.yml up --build -d
+    docker compose -f docker/docker-compose.yml --env-file=./.config/.env up --build -d
 
 up-db:
-    docker compose -f docker/docker-compose.yml up db -d
+    docker compose -f docker/docker-compose.yml --env-file=./.config/.env up db -d
 
 test:
-    docker compose -f docker/docker-compose.tests.yml up --build --abort-on-container-exit tests
+    docker compose -f docker/docker-compose.tests.yml --env-file=./.config/.env up --build --abort-on-container-exit tests
     just down
 
 test-unit:
     pytest -vvv tests/unit
 
 down:
-    docker compose -f docker/docker-compose.yml down
-    docker compose -f docker/docker-compose.tests.yml down
+    docker compose -f docker/docker-compose.yml --env-file=./.config/.env down
+    docker compose -f docker/docker-compose.tests.yml --env-file=./.config/.env down
 
 clear:
-    docker compose -f docker/docker-compose.yml down -v
+    docker compose -f docker/docker-compose.yml --env-file=./.config/.env down -v
 
 lint:
     ruff format

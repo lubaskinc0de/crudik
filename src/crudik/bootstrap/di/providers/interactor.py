@@ -1,7 +1,7 @@
 from dishka import BaseScope, Provider, Scope, provide_all
 
-from crudik.application.user.create import CreateUser
-from crudik.application.user.read import ReadUser
+from crudik.application.create_user import CreateUser
+from crudik.application.read_user import ReadUser
 
 
 class InteractorProvider(Provider):
