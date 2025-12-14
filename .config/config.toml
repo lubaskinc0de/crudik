@@ -1,5 +1,8 @@
 [auth]
 user_id_header = "X-Auth-User"
+access_token_header = "X-Access-Token"
+access_token_alg = "RS256"
+allow_unverified_email = false
 
 [tracing]
 trace_id_header = "X-Trace-Id"

@@ -37,20 +37,13 @@ services:
         container_name: oauth2-proxy
         image: quay.io/oauth2-proxy/oauth2-proxy:v7.11.0-alpine
         command:
-            - --upstream=http://nginx:80
-            - --reverse-proxy=true
-            - --cookie-httponly=true
-            - --request-logging=true
-            - --auth-logging=true
-            - --standard-logging=true
-            - --session-store-type=redis
-            - --redis-connection-url=redis://redis:6379/2
-            - --skip-provider-button
-            - --set-xauthrequest=true
+            - --config=/etc/oauth2-proxy/oauth2-proxy.toml
         entrypoint:
             - oauth2-proxy
         env_file:
             - ../.config/.env.oauthproxy
+        volumes:
+            - ../.config/oauth2-proxy.toml:/etc/oauth2-proxy/oauth2-proxy.toml
         ports:
             - 4180:8000
         healthcheck:

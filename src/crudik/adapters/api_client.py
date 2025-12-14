@@ -57,19 +57,32 @@ class APIClientConfig:
     """Config for APIClient."""
 
     auth_user_id_header: str
+    access_token_header: str
 
 
 class AuthContext:
     """Context manager for setting authentication."""
 
-    def __init__(self, api_client: "APIClient", auth_user_id: AuthUserId, config: APIClientConfig) -> None:
+    def __init__(
+        self,
+        api_client: "APIClient",
+        auth_user_id: AuthUserId,
+        config: APIClientConfig,
+        access_token: str | None,
+    ) -> None:
         self._api_client = api_client
         self._auth_user_id = auth_user_id
         self._config = config
+        self._access_token = access_token
 
     def __enter__(self) -> None:
         """Set authentication header for the duration of the context."""
         self._api_client.set_header(self._config.auth_user_id_header, self._auth_user_id)
+        if self._access_token:
+            self._api_client.set_header(
+                self._config.access_token_header,
+                self._access_token,
+            )
 
     def __exit__(self, *exc_info: object) -> None:
         """Remove authentication header after the context."""
@@ -87,6 +100,7 @@ class APIClient:
         config: APIClientConfig,
         trace_id: TraceId,
         tracing_config: TracingConfig,
+        access_token: str | None,
     ) -> None:
         self.session = session
         self.trace_id = trace_id
@@ -94,6 +108,7 @@ class APIClient:
             tracing_config.trace_id_header: self.trace_id,
         }
         self._config = config
+        self._access_token = access_token
 
     async def _load_response[T](self, response: ClientResponse, response_type: type[T] | None) -> APIResponse[T]:
         """Load response content or error from HTTP response."""
@@ -126,7 +141,7 @@ class APIClient:
 
     def authenticate(self, *, auth_user_id: AuthUserId) -> AuthContext:
         """Set auth user ID for requests."""
-        return AuthContext(self, auth_user_id, self._config)
+        return AuthContext(self, auth_user_id, self._config, self._access_token)
 
     async def readiness(self) -> APIResponse[EmptyResponse]:
         """GET /internal/ready."""

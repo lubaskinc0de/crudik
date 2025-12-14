@@ -10,7 +10,7 @@ services:
             - "../.config/config.toml:/etc/crudik/config.toml"
         container_name: tests
         environment:
-            - API_URL=http://api:5000
+            - API_URL=http://api:${APP_SERVER_PORT}
         depends_on:
             - api
 
