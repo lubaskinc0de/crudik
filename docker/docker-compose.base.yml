@@ -38,8 +38,6 @@ services:
         build:
             context: ../
             dockerfile: docker/oauth2-proxy.Dockerfile
-        entrypoint:
-            - oauth2-proxy
         env_file:
             - ../.config/.env.oauthproxy
         ports:
