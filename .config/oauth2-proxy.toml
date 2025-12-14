@@ -19,3 +19,4 @@ email_domains="*"
 http_address="http://0.0.0.0:8000"
 cookie_refresh="0h4m0s"
 cookie_expire="720h0m0s"
+cookie_csrf_per_request = true
