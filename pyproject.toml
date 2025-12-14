@@ -9,8 +9,7 @@ requires-python = '>=3.13'
 dependencies = [
     "dishka==1.7.2",
     "fastapi[standard]==0.123.0",
-    "asyncpg==0.31.0",
-    "sqlalchemy==2.0.44",
+    "sqlalchemy[postgresql-asyncpg]==2.0.44",
     "alembic==1.17.2",
     "aiohttp==3.13.2",
     "adaptix==3.0.0b11",
