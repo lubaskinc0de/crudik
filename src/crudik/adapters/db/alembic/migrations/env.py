@@ -2,7 +2,7 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import pool
+from sqlalchemy import URL, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
@@ -20,7 +20,7 @@ target_metadata = mapper_registry.metadata
 def get_url() -> str:
     config = DbConfig.from_env()
     url = config.connection_url
-    return url
+    return url.render_as_string(hide_password=False)
 
 
 def run_migrations_offline() -> None:
