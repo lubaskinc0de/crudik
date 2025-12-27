@@ -206,13 +206,3 @@ jobs:
                   tags: |
                       ghcr.io/${{ github.repository }}-loki:${{ steps.tag.outputs.IMAGE_VERSION }}
                       ghcr.io/${{ github.repository }}-loki:latest${{ steps.tag.outputs.TAG_SUFFIX }}
-
-            - name: Build and push oauth2-proxy
-              uses: docker/build-push-action@v3.2.0
-              with:
-                  context: .
-                  file: ./docker/oauth2-proxy.Dockerfile
-                  push: true
-                  tags: |
-                      ghcr.io/${{ github.repository }}-oauth2-proxy:${{ steps.tag.outputs.IMAGE_VERSION }}
-                      ghcr.io/${{ github.repository }}-oauth2-proxy:latest${{ steps.tag.outputs.TAG_SUFFIX }}
