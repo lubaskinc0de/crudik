@@ -151,7 +151,7 @@ crudik/
 │   │       │   └── root.py      # Root endpoints
 │   │       └── error_handlers.py # Global error handlers
 │   │
-│   └── bootstrap/                # Application initialization
+│   └── main/                # Application initialization
 │       ├── fast_api.py          # FastAPI app factory
 │       ├── cli.py               # CLI entry point
 │       ├── config/              # Configuration loading
@@ -204,7 +204,7 @@ crudik/
 
 -   **presentation** - Sub-layer of **adapters** layer. Handles HTTP requests and responses using FastAPI.
 
--   **bootstrap** - Responsible for application initialization, dependency injection container setup, configuration loading, logging setup and CLI interface.
+-   **main** - Responsible for application initialization, dependency injection container setup, configuration loading, logging setup and CLI interface.
 
 ## Authentication
 

@@ -47,7 +47,8 @@ class WebAuthUserIdProvider(AuthUserIdProvider):
             access_token = self.http_request.headers.get(self.config.access_token_header)
             if access_token is None:
                 logger.debug(
-                    "Request unauthorized due to missing access token header", header=self.config.access_token_header,
+                    "Request unauthorized due to missing access token header",
+                    header=self.config.access_token_header,
                 )
                 msg = f"Missing {self.config.access_token_header} header"
                 raise UnauthorizedError(

@@ -2,7 +2,7 @@
 root_package = crudik
 
 [importlinter:contract:1]
-name=Entities doesn't import application, adapters, presentation or bootstrap
+name=Entities doesn't import application, adapters, presentation or main
 type=forbidden
 source_modules=
     crudik.entities
@@ -10,31 +10,31 @@ forbidden_modules=
     crudik.application
     crudik.adapters
     crudik.presentation
-    crudik.bootstrap
+    crudik.main
 
 [importlinter:contract:2]
-name=Application doesn't import adapters, presentation or bootstrap
+name=Application doesn't import adapters, presentation or main
 type=forbidden
 source_modules=
     crudik.application
 forbidden_modules=
     crudik.adapters
     crudik.presentation
-    crudik.bootstrap
+    crudik.main
 
 [importlinter:contract:3]
-name=Adapters doesn't import presentation or bootstrap
+name=Adapters doesn't import presentation or main
 type=forbidden
 source_modules=
     crudik.adapters
 forbidden_modules=
     crudik.presentation
-    crudik.bootstrap
+    crudik.main
 
 [importlinter:contract:4]
-name=Presentation doesn't import bootstrap
+name=Presentation doesn't import main
 type=forbidden
 source_modules=
     crudik.presentation
 forbidden_modules=
-    crudik.bootstrap
+    crudik.main

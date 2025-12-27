@@ -3,7 +3,7 @@ from dishka import BaseScope, Provider, Scope, from_context
 from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.tracing import TracingConfig
-from crudik.bootstrap.config.loader import Config
+from crudik.main.config.loader import Config
 
 
 class ConfigProvider(Provider):

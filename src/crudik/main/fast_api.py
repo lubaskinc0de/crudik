@@ -5,9 +5,9 @@ import uvicorn
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from crudik.bootstrap.config.loader import Config
-from crudik.bootstrap.di.container import get_async_container
-from crudik.bootstrap.logs import configure_structlog
+from crudik.main.config.loader import Config
+from crudik.main.di.container import get_async_container
+from crudik.main.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
 from crudik.presentation.fast_api.tracing import tracing_middleware
 

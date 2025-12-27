@@ -83,4 +83,4 @@ name = 'lubaskinc0de'
 email = 'lubaskincorporation@gmail.com'
 
 [project.scripts]
-crudik = "crudik.bootstrap.cli:main"
+crudik = "crudik.main.cli:main"
