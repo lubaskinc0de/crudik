@@ -46,7 +46,7 @@ jobs:
                   sudo apt-get install -y docker-compose
 
             - name: Run tests
-              run: docker compose -f docker/docker-compose.tests.yml --env-file=./.config/.env up --build --abort-on-container-exit tests
+              run: docker compose -f docker/docker-compose.tests.yml --env-file=./.config/app/.env up --build --abort-on-container-exit tests
 
     bump_version:
         name: "Bump version"
