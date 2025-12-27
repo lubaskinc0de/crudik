@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Self
 
@@ -8,13 +9,12 @@ from crudik.adapters.auth.idp.auth_user import WebAuthUserIdProviderConfig
 from crudik.adapters.db.config import DbConfig
 from crudik.adapters.env_loader import env
 from crudik.adapters.tracing import TracingConfig
-from crudik.entities import config
 from crudik.presentation.fast_api.config import ServerConfig
 
 retort = Retort()
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class TomlConfig:
     """Configuration structure loaded from TOML file matching the file's schema."""
 
@@ -22,7 +22,7 @@ class TomlConfig:
     tracing: TracingConfig
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class Config:
     """Main application configuration."""
 

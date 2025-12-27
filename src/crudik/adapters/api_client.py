@@ -10,7 +10,6 @@ from crudik.adapters.errors.http.response import ErrorResponse
 from crudik.adapters.tracing import TraceId, TracingConfig
 from crudik.application.create_user import CreatedUser
 from crudik.application.read_user import UserModel
-from crudik.entities.common.config import config
 from crudik.entities.common.identifiers import UserId
 
 retort = Retort()
@@ -52,7 +51,7 @@ class APIResponse[T]:
         return self
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class APIClientConfig:
     """Config for APIClient."""
 

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import override
 
 import jwt
@@ -9,12 +10,11 @@ from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.auth.model import AuthUserId
 from crudik.adapters.base import adapter
 from crudik.application.common.logger import Logger
-from crudik.entities import config
 
 logger: Logger = structlog.get_logger(__name__)
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class WebAuthUserIdProviderConfig:
     """Configuration for web-based authentication user ID provider."""
 
