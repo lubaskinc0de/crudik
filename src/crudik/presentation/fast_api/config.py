@@ -5,5 +5,5 @@ from dataclasses import dataclass
 class ServerConfig:
     """HTTP-server configuration."""
 
-    server_port: int
-    server_host: str
+    port: int
+    host: str

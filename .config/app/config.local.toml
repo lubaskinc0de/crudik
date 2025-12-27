@@ -1,0 +1,20 @@
+[web_auth]
+user_id_header = "X-Auth-User"
+access_token_header = "X-Access-Token"
+access_token_alg = "RS256"
+allow_unverified_email = true
+
+[tracing]
+trace_id_header = "X-Trace-Id"
+trace_id_required = false
+
+[server]
+port = 5000
+host = "0.0.0.0"
+
+[db]
+db_name = "postgres"
+user = "postgres"
+password = "postgres"
+host = "localhost"
+port = 5432

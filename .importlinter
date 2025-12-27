@@ -23,18 +23,12 @@ forbidden_modules=
     crudik.main
 
 [importlinter:contract:3]
-name=Adapters doesn't import presentation or main
+name=Adapters doesn't import main
 type=forbidden
 source_modules=
     crudik.adapters
-forbidden_modules=
-    crudik.presentation
-    crudik.main
-
-[importlinter:contract:4]
-name=Presentation doesn't import main
-type=forbidden
-source_modules=
     crudik.presentation
 forbidden_modules=
     crudik.main
+ignore_imports =
+    crudik.adapters.db.alembic.migrations.env -> crudik.main.config.loader

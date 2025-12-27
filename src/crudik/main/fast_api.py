@@ -5,7 +5,7 @@ import uvicorn
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from crudik.main.config.loader import Config
+from crudik.main.config.loader import Config, get_toml_config_path, load_config_from_toml
 from crudik.main.di.container import get_async_container
 from crudik.main.logs import configure_structlog
 from crudik.presentation.fast_api import include_exception_handlers, include_routers
@@ -42,11 +42,11 @@ def create_app(config: Config) -> FastAPI:
 
 def run_api() -> None:
     """Starts the FastAPI application server using uvicorn on the configured host and port."""
-    config = Config.load()
+    config = load_config_from_toml(get_toml_config_path())
     uvicorn.run(
         create_app(config),
-        port=config.server.server_port,
-        host=config.server.server_host,
+        port=config.server.port,
+        host=config.server.host,
         log_config=log_config,
     )
 

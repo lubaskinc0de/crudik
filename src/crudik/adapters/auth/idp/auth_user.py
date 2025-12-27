@@ -14,8 +14,8 @@ logger: Logger = structlog.get_logger(__name__)
 
 
 @dataclass(slots=True, kw_only=True)
-class WebAuthUserIdProviderConfig:
-    """Configuration for web-based authentication user ID provider."""
+class WebAuthConfig:
+    """Configuration for web-based user ID provider."""
 
     user_id_header: str
     access_token_header: str
@@ -28,7 +28,7 @@ class WebAuthUserIdProvider(AuthUserIdProvider):
     """Adapter that extracts authentication user ID from HTTP request headers."""
 
     http_request: Request
-    config: WebAuthUserIdProviderConfig
+    config: WebAuthConfig
 
     @override
     async def get_auth_user_id(self) -> AuthUserId:
