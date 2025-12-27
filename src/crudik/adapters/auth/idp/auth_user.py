@@ -8,7 +8,6 @@ from fastapi import Request
 from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
 from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.auth.model import AuthUserId
-from crudik.adapters.base import adapter
 from crudik.application.common.logger import Logger
 
 logger: Logger = structlog.get_logger(__name__)
@@ -24,7 +23,7 @@ class WebAuthUserIdProviderConfig:
     allow_unverified_email: bool
 
 
-@adapter
+@dataclass(frozen=True, kw_only=True, slots=True)
 class WebAuthUserIdProvider(AuthUserIdProvider):
     """Adapter that extracts authentication user ID from HTTP request headers."""
 

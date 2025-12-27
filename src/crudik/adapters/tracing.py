@@ -5,7 +5,6 @@ from uuid import uuid4
 
 from fastapi.requests import Request
 
-from crudik.adapters.base import adapter
 from crudik.entities.errors.base import AppError, app_error
 
 type TraceId = str
@@ -43,7 +42,7 @@ class TraceProvider(Protocol):
         """Provide ``TraceId``."""
 
 
-@adapter
+@dataclass(frozen=True, kw_only=True, slots=True)
 class HTTPTraceProvider(TraceProvider):
     """Provide ``TraceId`` from HTTP request headers."""
 
