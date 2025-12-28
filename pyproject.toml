@@ -13,7 +13,7 @@ dependencies = [
     "alembic==1.17.2",
     "aiohttp==3.13.2",
     "adaptix==3.0.0b11",
-    "toml-rs==0.1.0",
+    "toml-rs==2.1.0",
     "structlog==25.5.0",
     "pyjwt==2.10.1",
     "cryptography==46.0.3",
