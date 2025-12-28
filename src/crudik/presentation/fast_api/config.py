@@ -1,9 +1,9 @@
-from crudik.entities.common.config import config
+from dataclasses import dataclass
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class ServerConfig:
     """HTTP-server configuration."""
 
-    server_port: int
-    server_host: str
+    port: int
+    host: str

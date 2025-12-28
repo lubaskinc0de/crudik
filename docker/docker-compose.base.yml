@@ -25,23 +25,35 @@ services:
         container_name: keycloak
         ports:
             - 8080:80
-        env_file:
-            - ../.config/.env.kc
+        environment:
+            - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+            - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+            - KC_HEALTH_ENABLED=true
+            - KC_HOSTNAME=https://your-keycloak-domain
+            - KC_HOSTNAME_ADMIN=https://your-keycloak-domain
+            - KC_HTTP_PORT=80
         healthcheck:
-            test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live']
+            test:
+                [
+                    "CMD-SHELL",
+                    '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live',
+                ]
             interval: 5s
             timeout: 5s
             retries: 30
 
     oauth2-proxy:
         container_name: oauth2-proxy
-        build:
-            context: ../
-            dockerfile: docker/oauth2-proxy.Dockerfile
-        env_file:
-            - ../.config/.env.oauthproxy
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.11.0-alpine
+        command: ["--config=/etc/oauth2-proxy/oauth2-proxy.toml"]
+        environment:
+            - OAUTH2_PROXY_CLIENT_ID=791bfcbc-7a4b-4d89-83b3-cbed6487db19
+            - OAUTH2_PROXY_CLIENT_SECRET=AJaOkPa1a4dVdRcPk8uxAMdj9ytls13u
+            - OAUTH2_PROXY_COOKIE_SECRET=your-cookie-secret
         ports:
             - 4180:8000
+        volumes:
+            - ../.config/oauth2-proxy.toml:/etc/oauth2-proxy/oauth2-proxy.toml
         healthcheck:
             test:
                 [
@@ -76,7 +88,9 @@ services:
             context: ../
             dockerfile: docker/Dockerfile
         env_file:
-            - "../.config/.env.migrations"
+            - "../.config/app/.env"
+        volumes:
+            - "../.config/app/config.toml:${APP_CONFIG_PATH}"
 
     api:
         container_name: api
@@ -88,9 +102,9 @@ services:
             context: ../
             dockerfile: docker/Dockerfile
         env_file:
-            - "../.config/.env"
+            - "../.config/app/.env"
         volumes:
-            - "../.config/config.toml:/etc/crudik/config.toml"
+            - "../.config/app/config.toml:${APP_CONFIG_PATH}"
         healthcheck:
             test: ["CMD", "curl", "-f", "http://localhost:5000/internal/ready"]
             interval: 4s
@@ -99,15 +113,14 @@ services:
         container_name: db
         restart: unless-stopped
         image: postgres:17
-        env_file:
-            - ../.config/.env.pg
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
         ports:
             - 5432:5432
         healthcheck:
             test: ["CMD-SHELL", "pg_isready -U postgres"]
             interval: 2s
-        volumes:
-            - ../.config/init-db.sql:/docker-entrypoint-initdb.d/init.sql
 
     vector:
         container_name: vector

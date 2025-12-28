@@ -1,11 +1,10 @@
 from abc import abstractmethod
+from dataclasses import dataclass
 from typing import Any, ClassVar, Protocol, override
 from uuid import uuid4
 
 from fastapi.requests import Request
 
-from crudik.adapters.base import adapter
-from crudik.entities.common.config import config
 from crudik.entities.errors.base import AppError, app_error
 
 type TraceId = str
@@ -27,7 +26,7 @@ class MissingTraceIdError(AppError):
         }
 
 
-@config
+@dataclass(slots=True, kw_only=True)
 class TracingConfig:
     """Tracing configuration."""
 
@@ -43,7 +42,7 @@ class TraceProvider(Protocol):
         """Provide ``TraceId``."""
 
 
-@adapter
+@dataclass(frozen=True, kw_only=True, slots=True)
 class HTTPTraceProvider(TraceProvider):
     """Provide ``TraceId`` from HTTP request headers."""
 

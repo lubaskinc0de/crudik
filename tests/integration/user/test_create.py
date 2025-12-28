@@ -1,8 +1,8 @@
-from crudik.adapters.api_client import APIClient
+from tests.api_client import ApiClient
 from tests.integration.user.utils import create_user
 
 
-async def test_ok(api_client: APIClient) -> None:
+async def test_create_user(api_client: ApiClient) -> None:
     """Test successful user creation."""
     with api_client.authenticate(auth_user_id="1"):
         response = await api_client.create_user()
@@ -10,7 +10,7 @@ async def test_ok(api_client: APIClient) -> None:
     response.assert_status(200).ensure_ok()
 
 
-async def test_already_exists(api_client: APIClient) -> None:
+async def test_create_user_that_already_exists_fails(api_client: ApiClient) -> None:
     """Test that creating a user with existing auth_user_id returns 409 error."""
     auth_user_id = "1"
 
@@ -25,7 +25,7 @@ async def test_already_exists(api_client: APIClient) -> None:
     assert error.meta["auth_user_id"] == auth_user_id
 
 
-async def test_unauthorized(api_client: APIClient) -> None:
+async def test_create_user_without_auth_fails(api_client: ApiClient) -> None:
     """Test that creating a user without authentication returns 401 error."""
     response = await api_client.create_user()
 

@@ -5,12 +5,12 @@ services:
             context: ../
             dockerfile: docker/tests.Dockerfile
         env_file:
-            - "../.config/.env.tests"
+            - "../.config/app/.env"
         volumes:
-            - "../.config/config.toml:/etc/crudik/config.toml"
+            - "../.config/app/config.toml:${APP_CONFIG_PATH}"
         container_name: tests
         environment:
-            - API_URL=http://api:${APP_SERVER_PORT}
+            - API_URL=http://api:5000
         depends_on:
             - api
 

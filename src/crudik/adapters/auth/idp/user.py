@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import override
 
 import structlog
@@ -5,7 +6,6 @@ import structlog
 from crudik.adapters.auth.common.gateway.auth_user import AuthUserGateway
 from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
 from crudik.adapters.auth.idp.base import AuthUserIdProvider
-from crudik.adapters.base import adapter
 from crudik.application.common.idp import IdProvider
 from crudik.application.common.logger import Logger
 from crudik.entities.user import User
@@ -13,7 +13,7 @@ from crudik.entities.user import User
 logger: Logger = structlog.get_logger(__name__)
 
 
-@adapter
+@dataclass(frozen=True, kw_only=True, slots=True)
 class IdProviderImpl(IdProvider):
     """Adapter implementation that resolves application User entity from authentication user ID."""
 

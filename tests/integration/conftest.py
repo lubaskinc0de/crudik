@@ -10,10 +10,10 @@ from dishka import AsyncContainer
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from crudik.adapters.api_client import APIClient, APIClientConfig
 from crudik.adapters.tracing import TraceId
-from crudik.bootstrap.config.loader import Config
-from crudik.bootstrap.di.container import get_async_container
+from crudik.main.config.loader import Config, get_toml_config_path, load_config_from_toml
+from crudik.main.di.container import get_async_container
+from tests.api_client import ApiClient, ApiClientConfig
 
 # This is a fake private key used only to sign fake access token for tests
 DUMMY_PRIVATE_KEY = """
@@ -48,10 +48,10 @@ gJWzg5NcCJa53leWAceA2fpttF2GgEYsR6udisqYI+UH1TUaMrujUqGFbNqXqdHo
 """
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def app_config() -> Config:
     """Load and provide app config."""
-    return Config.load()
+    return load_config_from_toml(get_toml_config_path())
 
 
 @pytest.fixture
@@ -61,9 +61,9 @@ async def trace_id() -> TraceId:
 
 
 @pytest.fixture
-async def container() -> AsyncIterator[AsyncContainer]:
+async def container(app_config: Config) -> AsyncIterator[AsyncContainer]:
     """Create and provide async DI container for tests."""
-    container = get_async_container(Config.load())
+    container = get_async_container(app_config)
     yield container
     await container.close()
 
@@ -115,7 +115,7 @@ def base_url() -> str:
     return os.environ["API_URL"]
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 async def access_token(app_config: Config) -> str:
     """Dummy access token with email_verified set to True."""
     return jwt.encode(
@@ -123,18 +123,18 @@ async def access_token(app_config: Config) -> str:
             "email_verified": True,
         },
         key=DUMMY_PRIVATE_KEY,
-        algorithm=app_config.web_auth_user_id_provider.access_token_alg,
+        algorithm=app_config.web_auth.access_token_alg,
     )
 
 
 @pytest.fixture
-def api_client(http_session: ClientSession, app_config: Config, trace_id: TraceId, access_token: str) -> APIClient:
+def api_client(http_session: ClientSession, app_config: Config, trace_id: TraceId, access_token: str) -> ApiClient:
     """Create and provide API client for tests."""
-    return APIClient(
+    return ApiClient(
         session=http_session,
-        config=APIClientConfig(
-            auth_user_id_header=app_config.web_auth_user_id_provider.user_id_header,
-            access_token_header=app_config.web_auth_user_id_provider.access_token_header,
+        config=ApiClientConfig(
+            auth_user_id_header=app_config.web_auth.user_id_header,
+            access_token_header=app_config.web_auth.access_token_header,
         ),
         trace_id=trace_id,
         tracing_config=app_config.tracing,

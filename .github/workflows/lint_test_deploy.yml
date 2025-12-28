@@ -5,17 +5,17 @@ jobs:
         name: "Run linters"
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v6
+            - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
               with:
                   persist-credentials: false
 
             - name: Set up Python
-              uses: actions/setup-python@v4
+              uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.9.1
               with:
                   python-version: "3.13.7"
 
             - name: Install uv
-              uses: astral-sh/setup-uv@v7
+              uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
               with:
                   version: "0.9.17"
 
@@ -37,7 +37,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v6
+              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
               with:
                   persist-credentials: false
 
@@ -46,7 +46,7 @@ jobs:
                   sudo apt-get install -y docker-compose
 
             - name: Run tests
-              run: docker compose -f docker/docker-compose.tests.yml --env-file=./.config/.env up --build --abort-on-container-exit tests
+              run: docker compose -f docker/docker-compose.tests.yml --env-file=./.config/app/.env up --build --abort-on-container-exit tests
 
     bump_version:
         name: "Bump version"
@@ -57,14 +57,14 @@ jobs:
             contents: write
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v6
+              uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
               with:
                   ref: ${{ github.event.pull_request.merge_commit_sha }}
                   fetch-depth: "0"
 
             - name: Bump version and push tag
               id: bump_version
-              uses: anothrNick/github-tag-action@v1
+              uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8 # 1.75.0
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   TAG_PREFIX: v
@@ -78,7 +78,7 @@ jobs:
                   STEPS_BUMP_VERSION_OUTPUTS_NEW_TAG: ${{ steps.bump_version.outputs.new_tag }}
 
             - name: Upload version file
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
               with:
                   name: version
                   path: VERSION.txt
@@ -102,13 +102,13 @@ jobs:
             contents: read
         steps:
             - name: Checkout the repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
               with:
                   fetch-depth: "0"
                   persist-credentials: false
 
             - name: Download version file if exists
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
               with:
                   name: version
                   path: ./
@@ -158,17 +158,17 @@ jobs:
                   STEPS_TAG_OUTPUTS_IMAGE_VERSION: ${{ steps.tag.outputs.IMAGE_VERSION }}
 
             - name: Docker Setup Buildx
-              uses: docker/setup-buildx-action@v2.2.1
+              uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325 # v2.2.1
 
             - name: Docker Login
-              uses: docker/login-action@v2.1.0
+              uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # v2.1.0
               with:
                   registry: ghcr.io
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Build and push
-              uses: docker/build-push-action@v3.2.0
+              uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # v3.2.0
               with:
                   context: .
                   file: ./docker/Dockerfile
@@ -178,7 +178,7 @@ jobs:
                       ghcr.io/${{ github.repository }}:latest${{ steps.tag.outputs.TAG_SUFFIX }}
 
             - name: Build and push grafana
-              uses: docker/build-push-action@v3.2.0
+              uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # v3.2.0
               with:
                   context: .
                   file: ./docker/grafana.Dockerfile
@@ -188,7 +188,7 @@ jobs:
                       ghcr.io/${{ github.repository }}-grafana:latest${{ steps.tag.outputs.TAG_SUFFIX }}
 
             - name: Build and push vector
-              uses: docker/build-push-action@v3.2.0
+              uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # v3.2.0
               with:
                   context: .
                   file: ./docker/vector.Dockerfile
@@ -198,7 +198,7 @@ jobs:
                       ghcr.io/${{ github.repository }}-vector:latest${{ steps.tag.outputs.TAG_SUFFIX }}
 
             - name: Build and push loki
-              uses: docker/build-push-action@v3.2.0
+              uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # v3.2.0
               with:
                   context: .
                   file: ./docker/loki.Dockerfile
@@ -206,13 +206,3 @@ jobs:
                   tags: |
                       ghcr.io/${{ github.repository }}-loki:${{ steps.tag.outputs.IMAGE_VERSION }}
                       ghcr.io/${{ github.repository }}-loki:latest${{ steps.tag.outputs.TAG_SUFFIX }}
-
-            - name: Build and push oauth2-proxy
-              uses: docker/build-push-action@v3.2.0
-              with:
-                  context: .
-                  file: ./docker/oauth2-proxy.Dockerfile
-                  push: true
-                  tags: |
-                      ghcr.io/${{ github.repository }}-oauth2-proxy:${{ steps.tag.outputs.IMAGE_VERSION }}
-                      ghcr.io/${{ github.repository }}-oauth2-proxy:latest${{ steps.tag.outputs.TAG_SUFFIX }}

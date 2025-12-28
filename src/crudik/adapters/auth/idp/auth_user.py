@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import override
 
 import jwt
@@ -7,16 +8,14 @@ from fastapi import Request
 from crudik.adapters.auth.errors.base import UnauthorizedError, UnauthorizedReason
 from crudik.adapters.auth.idp.base import AuthUserIdProvider
 from crudik.adapters.auth.model import AuthUserId
-from crudik.adapters.base import adapter
 from crudik.application.common.logger import Logger
-from crudik.entities import config
 
 logger: Logger = structlog.get_logger(__name__)
 
 
-@config
-class WebAuthUserIdProviderConfig:
-    """Configuration for web-based authentication user ID provider."""
+@dataclass(slots=True, kw_only=True)
+class WebAuthConfig:
+    """Configuration for web-based user ID provider."""
 
     user_id_header: str
     access_token_header: str
@@ -24,12 +23,12 @@ class WebAuthUserIdProviderConfig:
     allow_unverified_email: bool
 
 
-@adapter
+@dataclass(frozen=True, kw_only=True, slots=True)
 class WebAuthUserIdProvider(AuthUserIdProvider):
     """Adapter that extracts authentication user ID from HTTP request headers."""
 
     http_request: Request
-    config: WebAuthUserIdProviderConfig
+    config: WebAuthConfig
 
     @override
     async def get_auth_user_id(self) -> AuthUserId:
@@ -47,7 +46,8 @@ class WebAuthUserIdProvider(AuthUserIdProvider):
             access_token = self.http_request.headers.get(self.config.access_token_header)
             if access_token is None:
                 logger.debug(
-                    "Request unauthorized due to missing access token header", header=self.config.access_token_header,
+                    "Request unauthorized due to missing access token header",
+                    header=self.config.access_token_header,
                 )
                 msg = f"Missing {self.config.access_token_header} header"
                 raise UnauthorizedError(

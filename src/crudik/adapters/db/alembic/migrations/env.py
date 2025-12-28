@@ -2,12 +2,12 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import URL, pool
+from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from crudik.adapters.db.config import DbConfig
 from crudik.adapters.db.models.base import mapper_registry
+from crudik.main.config.loader import get_toml_config_path, load_config_from_toml
 
 config = context.config
 
@@ -18,7 +18,7 @@ target_metadata = mapper_registry.metadata
 
 
 def get_url() -> str:
-    config = DbConfig.from_env()
+    config = load_config_from_toml(get_toml_config_path()).db
     url = config.connection_url
     return url.render_as_string(hide_password=False)
 
