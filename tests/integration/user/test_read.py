@@ -1,10 +1,10 @@
 from uuid import uuid4
 
-from crudik.adapters.api_client import APIClient
+from tests.api_client import ApiClient
 from tests.integration.user.utils import create_user
 
 
-async def test_ok(api_client: APIClient) -> None:
+async def test_read_user(api_client: ApiClient) -> None:
     """Test successful user read by id."""
     auth_user_id = "1"
     with api_client.authenticate(auth_user_id=auth_user_id):
@@ -15,7 +15,7 @@ async def test_ok(api_client: APIClient) -> None:
     assert content.id == new_user_id
 
 
-async def test_not_exists(api_client: APIClient) -> None:
+async def test_read_user_that_does_not_exists_fails(api_client: ApiClient) -> None:
     """Test that reading non-existent user returns 404 error."""
     auth_user_id = "1"
     fake_user_id = uuid4()
@@ -30,7 +30,7 @@ async def test_not_exists(api_client: APIClient) -> None:
     assert error.meta["user_id"] == str(fake_user_id)
 
 
-async def test_by_other_user(api_client: APIClient) -> None:
+async def test_read_user_by_other_user_fails(api_client: ApiClient) -> None:
     """Test that reading another user's data returns 403 error."""
     first_auth_user_id = "1"
     second_auth_user_id = "2"
@@ -45,7 +45,7 @@ async def test_by_other_user(api_client: APIClient) -> None:
     assert error.code == "ACCESS_DENIED"
 
 
-async def test_unauthorized(api_client: APIClient) -> None:
+async def test_read_user_without_auth_fails(api_client: ApiClient) -> None:
     """Test that reading a user without authentication returns 401 error."""
     user_id = uuid4()
     response = await api_client.read_user(user_id)

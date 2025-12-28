@@ -52,7 +52,7 @@ class APIResponse[T]:
 
 
 @dataclass(slots=True, kw_only=True)
-class APIClientConfig:
+class ApiClientConfig:
     """Config for APIClient."""
 
     auth_user_id_header: str
@@ -64,9 +64,9 @@ class AuthContext:
 
     def __init__(
         self,
-        api_client: "APIClient",
+        api_client: "ApiClient",
         auth_user_id: AuthUserId,
-        config: APIClientConfig,
+        config: ApiClientConfig,
         access_token: str | None,
     ) -> None:
         self._api_client = api_client
@@ -90,13 +90,13 @@ class AuthContext:
             raise exc_info[1]  # type: ignore[misc] # exc value
 
 
-class APIClient:
-    """Client for making API requests."""
+class ApiClient:
+    """Client for making API requests in tests."""
 
     def __init__(
         self,
         session: ClientSession,
-        config: APIClientConfig,
+        config: ApiClientConfig,
         trace_id: TraceId,
         tracing_config: TracingConfig,
         access_token: str | None,
