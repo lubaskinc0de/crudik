@@ -116,69 +116,92 @@ crudik/
 │   ├── entities/                  # Domain entities
 │   │   ├── base.py               # Base entity class
 │   │   ├── user.py               # User entity
-│   │   └── common/               # Common domain utilities
-│   │       ├── identifiers.py    # Type-aliases to identifiers (UserId, etc.)
-│   │       └── config.py         # Common configuration class decorator
+│   │   ├── common/               # Common domain utilities
+│   │   │   └── identifiers.py    # Type-aliases to identifiers (UserId, etc.)
+│   │   └── errors/              # Domain-specific errors
+│   │       └── base.py          # Base application error
 │   │
 │   ├── application/               # Application layer (use cases)
 │   │   ├── common/               # Common application interfaces (ports)
 │   │   │   ├── interactor.py    # Base interactor decorator
 │   │   │   ├── uow.py           # Unit of Work pattern interface
 │   │   │   ├── auth_provider.py # Authentication provider interface
+│   │   │   ├── idp.py           # Identity provider interface
+│   │   │   ├── logger.py        # Logger interface
 │   │   │   └── gateway/         # Database gateway interfaces
-│   │   ├── user/                 # User-related interactors
-│   │   │   ├── create.py        # Create user interactor
-│   │   │   └── read.py          # Read user interactor
+│   │   │       └── user.py      # User gateway interface
+│   │   ├── create_user.py        # Create user interactor
+│   │   ├── read_user.py          # Read user interactor
 │   │   └── errors/              # Application-specific errors
+│   │       └── user.py          # User-related errors
 │   │
 │   ├── adapters/                 # Adapters (infrastructure) layer
+│   │   ├── config.py            # Adapter configuration
+│   │   ├── tracing.py           # Tracing utilities
 │   │   ├── db/                   # Database adapters
 │   │   │   ├── config.py        # Database configuration
 │   │   │   ├── models/          # SQLAlchemy models
 │   │   │   ├── gateway/         # Database gateway implementations
 │   │   │   └── alembic/         # Database migrations
+│   │   │       └── migrations/  # Migration files
 │   │   ├── auth/                 # Authentication adapters
 │   │   │   ├── auth_provider.py # Auth provider implementation
+│   │   │   ├── model.py         # Auth models
 │   │   │   ├── idp/             # Identity provider implementations
-│   │   │   └── common/          # Common auth interfaces (ports)
-│   │   ├── api_client.py        # API client for project (used in tests)
+│   │   │   ├── common/          # Common auth interfaces
+│   │   │   │   └── gateway/     # Auth gateway interfaces
+│   │   │   └── errors/          # Auth-specific errors
 │   │   └── errors/              # Adapter-specific errors
+│   │       └── http/            # HTTP-specific errors
 │   │
 │   ├── presentation/             # Presentation sub-layer
 │   │   └── fast_api/            # FastAPI-specific
-│   │       ├── routers/         # API route handlers
-│   │       │   ├── user.py      # User endpoints
-│   │       │   └── root.py      # Root endpoints
-│   │       └── error_handlers.py # Global error handlers
+│   │       ├── config.py        # FastAPI configuration
+│   │       ├── tracing.py       # FastAPI tracing middleware
+│   │       ├── error_handlers.py # Global error handlers
+│   │       └── routers/         # API route handlers
+│   │           ├── user.py      # User endpoints
+│   │           └── root.py      # Root endpoints
 │   │
 │   └── main/                # Application initialization
 │       ├── fast_api.py          # FastAPI app factory
 │       ├── cli.py               # CLI entry point
+│       ├── logs.py              # Logging configuration
 │       ├── config/              # Configuration loading
-│       ├── di/                  # Dependency injection setup
-│       └── logs.py              # Logging configuration
+│       │   └── loader.py        # Configuration loader
+│       └── di/                  # Dependency injection setup
+│           ├── container.py     # DI container
+│           └── providers/       # Provider modules
+│               ├── config.py    # Config providers
+│               ├── adapter.py   # Adapter providers
+│               ├── interactor.py # Interactor providers
+│               └── tracing.py   # Tracing providers
 │
 ├── tests/                        # Test suite
+│   ├── api_client.py            # API client for testing
 │   └── integration/             # Integration tests
 │       ├── conftest.py          # Pytest fixtures
+│       ├── test_probe.py        # Health check tests
 │       └── user/                # User-related tests
+│           ├── utils.py         # Test utilities
+│           ├── test_create.py   # Create user tests
+│           └── test_read.py     # Read user tests
 │
 ├── .config/                      # Configuration files
-│   ├── config.toml              # Main application configuration
-│   ├── .env                     # Application environment variables
-│   ├── .env.kc                  # Keycloak environment variables
-│   ├── .env.migrations          # Database migrations environment variables
-│   ├── .env.oauthproxy          # OAuth2-Proxy environment variables
-│   ├── .env.pg                  # PostgreSQL environment variables
-│   ├── .env.tests               # Tests environment variables
+│   ├── app/                     # Application configuration
+│   │   ├── config.toml          # Main configuration
+│   │   └── config.local.toml    # Local overrides
 │   ├── nginx.conf               # Nginx reverse proxy configuration
+│   ├── oauth2-proxy.toml        # OAuth2-Proxy configuration
 │   ├── loki.yaml                # Loki log aggregation configuration
 │   ├── vector.yaml              # Vector log processing configuration
-│   ├── init-db.sql              # PostgreSQL initialization script
 │   └── grafana/                  # Grafana provisioning
 │       └── provisioning/
 │           ├── dashboards/      # Dashboard definitions
+│           │   ├── dashboards.yml
+│           │   └── logs.json
 │           └── datasources/     # Data source configurations
+│               └── loki.yml
 │
 ├── docker/                       # Docker configuration
 │   ├── Dockerfile               # Main application image
@@ -191,7 +214,12 @@ crudik/
 │   └── docker-compose.base.yml  # Base docker-compose template
 │
 ├── keycloak/                     # Keycloak configuration
-│   └── clients/                 # Client configs
+│   ├── clients/                 # Client configs
+│   └── README.md
+│
+├── justfile                      # Just command runner recipes
+├── pyproject.toml               # Project dependencies and metadata
+└── uv.lock                      # Locked dependencies (uv)
 ```
 
 ### Layer Responsibilities
@@ -335,7 +363,6 @@ The pipeline consists of four main jobs that run in sequence:
     -   Grafana image (`ghcr.io/<repo>-grafana/<version>`)
     -   Vector image (`ghcr.io/<repo>-vector/<version>`)
     -   Loki image (`ghcr.io/<repo>-loki/<version>`)
-    -   OAuth2-proxy image (`ghcr.io/<repo>-oauth2-proxy/<version>`)
 
 ### Workflow Conditions
 
