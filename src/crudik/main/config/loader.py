@@ -33,5 +33,5 @@ def get_toml_config_path() -> Path:
 
 def load_config_from_toml(toml_path: Path) -> Config:
     """Load ``Config`` from toml file."""
-    with toml_path.open("rb") as f:
-        return retort.load(toml_rs.load(f), Config)
+    file = toml_path.read_text("utf-8")
+    return retort.load(toml_rs.loads(file, toml_version="1.1.0"), Config)
