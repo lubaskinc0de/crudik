@@ -26,6 +26,7 @@ lint:
     ruff check --fix
     mypy
     lint-imports
+    typos
 
 dev-environment:
     uv pip install -e ".[dev]"
