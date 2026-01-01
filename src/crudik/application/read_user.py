@@ -39,7 +39,7 @@ class ReadUser:
             logger.debug("Read user access denied", current_user_id=current_user.id, user_id=user_id)
             raise AccessDeniedError
 
-        logger.info("Read user successfull", user_id=user_id)
+        logger.info("Read user successful", user_id=user_id)
         return UserModel(
             id=user.id,
         )
