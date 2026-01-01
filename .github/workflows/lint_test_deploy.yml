@@ -31,6 +31,9 @@ jobs:
 
             - name: Import-linter
               run: lint-imports
+            
+            - name: Typos
+              run: typos
 
     test:
         name: "Run tests"

@@ -28,7 +28,7 @@ class IdProviderImpl(IdProvider):
         """
         auth_user_id = await self.auth_user_idp.get_auth_user_id()
         if (auth_user := await self.auth_user_gateway.get(auth_user_id)) is None:
-            logger.info("Request unauthroized due to auth user is not exists", auth_user_id=auth_user_id)
+            logger.info("Request unauthorized due to auth user is not exists", auth_user_id=auth_user_id)
             raise UnauthorizedError(reason=UnauthorizedReason.INVALID_AUTH_USER_ID)
 
         return auth_user.user
