@@ -27,7 +27,6 @@ def create_app(config: Config) -> FastAPI:
         lifespan=lifespan,
         root_path="/api",
         docs_url="/docs",
-        redoc_url="/redoc",
         openapi_url="/openapi.json",
     )
     app.middleware("http")(tracing_middleware)
