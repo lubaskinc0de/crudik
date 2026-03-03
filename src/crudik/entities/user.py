@@ -1,9 +1,10 @@
-from crudik.entities.base import Entity, model
+from dataclasses import dataclass
+
 from crudik.entities.common.identifiers import UserId
 
 
-@model
-class User(Entity):
+@dataclass
+class User:
     """Domain entity representing a user in the application. Contains only business data, not authentication details."""
 
     id: UserId

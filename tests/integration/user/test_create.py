@@ -10,7 +10,7 @@ async def test_create_user(api_client: ApiClient) -> None:
     response.assert_status(200).ensure_ok()
 
 
-async def test_create_user_that_already_exists_fails(api_client: ApiClient) -> None:
+async def test_cannot_create_user_that_already_exists(api_client: ApiClient) -> None:
     """Test that creating a user with existing auth_user_id returns 409 error."""
     auth_user_id = "1"
 
@@ -25,7 +25,7 @@ async def test_create_user_that_already_exists_fails(api_client: ApiClient) -> N
     assert error.meta["auth_user_id"] == auth_user_id
 
 
-async def test_create_user_without_auth_fails(api_client: ApiClient) -> None:
+async def test_cannot_create_user_without_auth(api_client: ApiClient) -> None:
     """Test that creating a user without authentication returns 401 error."""
     response = await api_client.create_user()
 

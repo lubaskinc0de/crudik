@@ -43,36 +43,40 @@ class WebAuthUserIdProvider(AuthUserIdProvider):
             )
 
         if not self.config.allow_unverified_email:
-            access_token = self.http_request.headers.get(self.config.access_token_header)
-            if access_token is None:
-                logger.debug(
-                    "Request unauthorized due to missing access token header",
-                    header=self.config.access_token_header,
-                )
-                msg = f"Missing {self.config.access_token_header} header"
-                raise UnauthorizedError(
-                    message=msg,
-                    reason=UnauthorizedReason.MISSING_ACCESS_TOKEN,
-                    header=self.config.access_token_header,
-                )
-            try:
-                email_verified: bool = jwt.decode(
-                    access_token,
-                    options={"verify_signature": False, "verify_exp": True},
-                    algorithms=[self.config.access_token_alg],
-                )["email_verified"]
-            except KeyError as e:
-                logger.debug("Request unauthorized due to corrupted access token")
-                raise UnauthorizedError(
-                    message="Corrupted access token",
-                    reason=UnauthorizedReason.CORRUPTED_ACCESS_TOKEN,
-                ) from e
-
-            logger.debug("Email verified status", status=email_verified)
-            if not email_verified:
-                raise UnauthorizedError(
-                    message="Email is not verified",
-                    reason=UnauthorizedReason.EMAIL_IS_NOT_VERIFIED,
-                )
+            await self._ensure_email_verified()
 
         return user_id
+
+    async def _ensure_email_verified(self) -> None:
+        access_token = self.http_request.headers.get(self.config.access_token_header)
+        if access_token is None:
+            logger.debug(
+                "Request unauthorized due to missing access token header",
+                header=self.config.access_token_header,
+            )
+            msg = f"Missing {self.config.access_token_header} header"
+            raise UnauthorizedError(
+                message=msg,
+                reason=UnauthorizedReason.MISSING_ACCESS_TOKEN,
+                header=self.config.access_token_header,
+            )
+
+        try:
+            email_verified: bool = jwt.decode(
+                access_token,
+                options={"verify_signature": False, "verify_exp": True},
+                algorithms=[self.config.access_token_alg],
+            )["email_verified"]
+        except KeyError as e:
+            logger.debug("Request unauthorized due to corrupted access token")
+            raise UnauthorizedError(
+                message="Corrupted access token",
+                reason=UnauthorizedReason.CORRUPTED_ACCESS_TOKEN,
+            ) from e
+
+        logger.debug("Email verified status", status=email_verified)
+        if not email_verified:
+            raise UnauthorizedError(
+                message="Email is not verified",
+                reason=UnauthorizedReason.EMAIL_IS_NOT_VERIFIED,
+            )
